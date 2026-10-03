@@ -2,167 +2,188 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  BarChart3,
+  CalendarCheck,
   Check,
   Clock,
-  Database,
-  Gauge,
+  Coffee,
+  Flame,
   Link2,
-  ListChecks,
-  MessageSquareText,
+  MessageCircle,
   Radar,
+  Rocket,
   Search,
-  ShieldCheck,
+  Send,
   Sparkles,
   Target,
-  UserCheck,
+  TrendingUp,
+  UserPlus,
   Users,
   X,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
-  title: "Hiring Signals · Find companies building a sales team right now",
+  title: "Hiring Signals · Know who to call today, and why",
   description:
-    "Hiring Signals spots companies hiring SDRs, AEs and a new sales leader inside one division, tells you why now, who to contact and what to say.",
+    "Hiring Signals finds companies that are building their sales team right now and hands you the reason to call, the right person and a message that gets replies.",
   openGraph: {
-    title: "Hiring Signals",
-    description: "Find companies building a sales team right now, and know exactly why to call them today.",
+    title: "Hiring Signals · Your next deal is already hiring",
+    description: "Find companies building their sales team right now. Call them first, with a reason they care about.",
     type: "website",
   },
 };
 
 const NAV = [
   { href: "#how", label: "How it works" },
+  { href: "#why", label: "Why timing wins" },
   { href: "#who", label: "Who it's for" },
-  { href: "#features", label: "Features" },
   { href: "#faq", label: "FAQ" },
 ];
 
 function Logo() {
   return (
-    <span className="flex items-center gap-2 font-semibold">
-      <span className="inline-flex size-7 items-center justify-center rounded-lg bg-accent text-accent-fg">
-        <Radar size={16} />
+    <span className="flex items-center gap-2 text-[16px] font-bold tracking-tight">
+      <span className="inline-flex size-8 items-center justify-center rounded-xl bg-accent text-accent-fg">
+        <Radar size={17} />
       </span>
       Hiring Signals
     </span>
   );
 }
 
-function Cta({ children = "Get started free", className = "" }: { children?: React.ReactNode; className?: string }) {
+function PrimaryCta({ children = "Get my call list", className = "" }: { children?: React.ReactNode; className?: string }) {
   return (
     <Link
       href="/signup"
-      className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-[15px] font-semibold text-accent-fg shadow-sm transition hover:opacity-90 ${className}`}
+      className={`group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-[16px] font-semibold text-accent-fg shadow-[0_8px_24px_-8px_var(--accent)] transition hover:-translate-y-0.5 hover:opacity-95 ${className}`}
     >
-      {children} <ArrowRight size={16} />
+      {children}
+      <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
     </Link>
   );
 }
 
-function SectionTitle({ eyebrow, title, intro }: { eyebrow: string; title: React.ReactNode; intro?: string }) {
+function Highlight({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
-      <div className="text-[13px] font-semibold tracking-wide text-accent uppercase">{eyebrow}</div>
-      <h2 className="mt-2 text-[28px] leading-tight font-semibold tracking-tight sm:text-[36px]">{title}</h2>
-      {intro && <p className="mt-3 text-[16px] text-muted">{intro}</p>}
+    <span className="relative inline-block">
+      <span aria-hidden className="absolute inset-x-[-4px] bottom-[0.08em] h-[0.42em] -rotate-1 rounded-md bg-sun/70" />
+      <span className="relative">{children}</span>
+    </span>
+  );
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full bg-sun-soft px-3 py-1 text-[13px] font-semibold text-sun-ink">
+      {children}
     </div>
   );
 }
 
-/** A static picture of the product: the account card an SDR sees. */
-function ProductMock() {
+/* ------------------------------------------------------------------ */
+/* Hero visual: the SDR's morning call list                            */
+/* ------------------------------------------------------------------ */
+const CALL_LIST = [
+  {
+    name: "Laufwerk Sneakers",
+    who: "Jonas Weber · Head of Sales",
+    reason: "New sales boss, 3 weeks in. Hiring 4 reps.",
+    icon: <UserPlus size={14} />,
+    heat: "Hot",
+  },
+  {
+    name: "Kernwerk AI",
+    who: "Founder · CEO",
+    reason: "Hiring their first salesperson ever.",
+    icon: <Rocket size={14} />,
+    heat: "Hot",
+  },
+  {
+    name: "Grünwerk Energie",
+    who: "Max Bauer · VP Sales",
+    reason: "Hiring 3 SDRs for small-business sales.",
+    icon: <Users size={14} />,
+    heat: "Warm",
+  },
+];
+
+function CallListMock() {
   return (
-    <div className="relative">
-      <div className="absolute -inset-6 -z-10 rounded-[32px] bg-[radial-gradient(60%_60%_at_50%_40%,var(--accent-soft),transparent)]" />
-      <div className="rounded-2xl border border-line bg-surface p-4 shadow-xl sm:p-5">
-        <div className="flex items-start gap-3">
-          <span className="inline-flex size-10 items-center justify-center rounded-xl border border-line bg-surface-2 font-semibold text-muted">L</span>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="font-semibold">Laufwerk Sneakers</span>
-              <span className="rounded-md bg-hot-bg px-1.5 text-[12px] font-semibold text-hot-fg">Hot</span>
-              <span className="rounded-md bg-surface-2 px-1.5 text-[12px] font-medium text-muted">Call today</span>
-            </div>
-            <div className="text-[13px] text-muted">Footwear · 420 employees · Berlin</div>
+    <div className="relative mx-auto w-full max-w-[460px]">
+      <div aria-hidden className="absolute -top-8 -right-6 size-40 rounded-full bg-sun/40 blur-2xl" />
+      <div aria-hidden className="absolute -bottom-10 -left-8 size-48 rounded-full bg-accent/20 blur-3xl" />
+
+      <div className="relative rounded-[28px] border border-line bg-surface p-5 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.35)]">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-[12px] font-medium text-muted">Monday, 8:30</div>
+            <div className="text-[18px] font-bold">Your call list today</div>
           </div>
-          <svg width="52" height="52" viewBox="0 0 52 52" aria-label="Priority 84" role="img">
-            <circle cx="26" cy="26" r="21" fill="none" stroke="var(--surface-2)" strokeWidth="5" />
-            <circle cx="26" cy="26" r="21" fill="none" stroke="var(--chart-1)" strokeWidth="5" strokeLinecap="round" strokeDasharray={`${0.84 * 132} 132`} transform="rotate(-90 26 26)" />
-            <text x="26" y="31" textAnchor="middle" fontSize="15" fontWeight="600" fill="var(--text)">84</text>
-          </svg>
-        </div>
-
-        <div className="mt-4 rounded-xl bg-surface-2/60 p-3.5">
-          <div className="text-[12px] font-semibold tracking-wide text-muted uppercase">Why now</div>
-          <ul className="mt-2 space-y-1.5 text-[13px]">
-            {[
-              "4 open roles in Sales · Wholesale · DACH",
-              "New Head of Sales, 21 days in the role",
-              "Job ads mention Salesforce",
-              "Jonas used HubSpot at his last company",
-            ].map((r) => (
-              <li key={r} className="flex gap-2">
-                <Check size={15} className="mt-0.5 shrink-0 text-ok" /> {r}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-3 flex items-center gap-2 rounded-lg bg-accent-soft px-2.5 py-1.5 text-[12px] font-medium text-accent">
-            <Clock size={13} /> Buying window closes in ~69 days
-          </div>
-        </div>
-
-        <div className="mt-3 grid grid-cols-4 gap-2">
-          {[
-            ["Cluster", 95],
-            ["Fit", 78],
-            ["Timing", 86],
-            ["Reach", 70],
-          ].map(([l, v]) => (
-            <div key={l as string}>
-              <div className="flex justify-between text-[11px] text-muted">
-                <span>{l}</span>
-                <span className="font-medium text-fg">{v}</span>
-              </div>
-              <div className="mt-1 h-1.5 rounded-full bg-surface-2">
-                <div className="h-full rounded-full bg-chart-1" style={{ width: `${v}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 rounded-xl border border-line p-3">
-          <div className="flex items-center gap-1.5 text-[12px] font-medium text-muted">
-            <Sparkles size={13} className="text-accent" /> Suggested opener · First 90 days
-          </div>
-          <p className="mt-1.5 text-[13px] leading-relaxed">
-            Hi Jonas, congrats on the new role at Laufwerk. Saw you&apos;re hiring 4 people for Wholesale DACH at once. How are you
-            planning to onboard them?
-          </p>
-        </div>
-
-        <div className="mt-3 flex items-center gap-2 text-[12px] text-muted">
-          <X size={13} className="text-danger-fg" />
-          <span>
-            Not counted: <span className="line-through">Sales Associate, Store Berlin</span> (shop floor, not B2B sales)
+          <span className="inline-flex items-center gap-1 rounded-full bg-hot-bg px-2.5 py-1 text-[12px] font-bold text-hot-fg">
+            <Flame size={13} /> 2 hot
           </span>
         </div>
+
+        <ul className="mt-4 space-y-2.5">
+          {CALL_LIST.map((c, i) => (
+            <li
+              key={c.name}
+              className={`rounded-2xl border p-3.5 ${i === 0 ? "border-accent/50 bg-accent-soft/60" : "border-line bg-bg"}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface text-[15px] font-bold shadow-sm">
+                  {c.name.charAt(0)}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-[15px] font-semibold">{c.name}</span>
+                    <span
+                      className={`rounded-full px-2 text-[11px] font-bold ${c.heat === "Hot" ? "bg-hot-bg text-hot-fg" : "bg-warm-bg text-warm-fg"}`}
+                    >
+                      {c.heat}
+                    </span>
+                  </div>
+                  <div className="truncate text-[12px] text-muted">{c.who}</div>
+                </div>
+              </div>
+              <div className="mt-2.5 flex items-start gap-2 text-[13px] font-medium">
+                <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-md bg-sun-soft text-sun-ink">
+                  {c.icon}
+                </span>
+                {c.reason}
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-3 pb-24 text-center text-[12px] font-medium text-muted sm:pb-14">+ 9 more accounts on your list</div>
+      </div>
+
+      {/* Floating message bubble */}
+      <div className="absolute -right-2 -bottom-8 w-[78%] rotate-[1.5deg] rounded-2xl border border-line bg-surface p-3.5 shadow-xl sm:-right-10">
+        <div className="flex items-center gap-1.5 text-[12px] font-semibold text-accent">
+          <Sparkles size={13} /> Message ready for Jonas
+        </div>
+        <p className="mt-1 text-[13px] leading-snug">
+          “Congrats on the new role! Saw you’re hiring 4 reps for Wholesale at once. How are you planning to get them up to speed?”
+        </p>
       </div>
     </div>
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Page                                                                */
+/* ------------------------------------------------------------------ */
 export default function LandingPage() {
   return (
     <div className="min-h-screen overflow-x-clip bg-bg">
       {/* Nav */}
-      <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-8 px-4 sm:px-6">
           <Link href="/welcome" aria-label="Hiring Signals home">
             <Logo />
           </Link>
-          <nav className="hidden items-center gap-5 text-[14px] text-muted md:flex">
+          <nav className="hidden items-center gap-6 text-[14px] font-medium text-muted lg:flex">
             {NAV.map((n) => (
               <a key={n.href} href={n.href} className="hover:text-fg">
                 {n.label}
@@ -171,11 +192,11 @@ export default function LandingPage() {
           </nav>
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
-            <Link href="/login" className="hidden h-9 items-center rounded-lg px-3 text-[14px] font-medium hover:bg-surface-2 sm:inline-flex">
-              Sign in
+            <Link href="/login" className="hidden h-10 items-center rounded-full px-4 text-[14px] font-semibold hover:bg-surface-2 sm:inline-flex">
+              Log in
             </Link>
-            <Link href="/signup" className="inline-flex h-9 items-center rounded-lg bg-accent px-3.5 text-[14px] font-semibold text-accent-fg hover:opacity-90">
-              Get started
+            <Link href="/signup" className="inline-flex h-10 items-center rounded-full bg-accent px-4 text-[14px] font-semibold text-accent-fg hover:opacity-90">
+              Start free
             </Link>
           </div>
         </div>
@@ -183,274 +204,333 @@ export default function LandingPage() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-14 pb-20 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-20">
+        <section className="mx-auto grid max-w-6xl items-center gap-16 px-4 pt-12 pb-24 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-10 lg:pt-20">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-[13px] text-muted">
-              <span className="size-1.5 rounded-full bg-chart-1" /> For SDRs and sales teams in B2B
-            </div>
-            <h1 className="mt-5 text-[34px] leading-[1.1] font-semibold tracking-tight sm:text-[52px]">
-              Call the companies that are{" "}
-              <span className="relative sm:whitespace-nowrap">
-                <span className="absolute inset-x-0 bottom-1 -z-0 h-3 rounded-sm bg-warm-bg sm:h-4" aria-hidden />
-                <span className="relative">building a sales team</span>
-              </span>{" "}
-              right now.
+            <Eyebrow>
+              <Target size={14} /> For SDRs, BDRs and account executives
+            </Eyebrow>
+            <h1 className="mt-6 text-[40px] leading-[1.05] font-extrabold tracking-tight sm:text-[60px]">
+              Your next deal is <Highlight>already hiring.</Highlight>
             </h1>
-            <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-muted">
-              Hiring Signals spots companies hiring SDRs, AEs and a new sales leader inside one division, then tells you{" "}
-              <span className="text-fg">why now</span>, <span className="text-fg">who to contact</span> and{" "}
-              <span className="text-fg">what to say</span>. Paste a LinkedIn URL. Get a ranked account in minutes.
+            <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-muted sm:text-[20px]">
+              We find companies that are building their sales team <b className="font-semibold text-fg">right now</b>, and hand you
+              the reason to call, the right person and a message that gets a reply.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Cta />
-              <a href="#how" className="inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-[15px] font-medium hover:bg-surface-2">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <PrimaryCta />
+              <a
+                href="#how"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-line bg-surface px-6 text-[16px] font-semibold hover:bg-surface-2"
+              >
                 See how it works
               </a>
             </div>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-muted">
-              {["No credit card", "Set up in a minute", "Built with GDPR in mind"].map((t) => (
+            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[14px] font-medium text-muted">
+              {["Free to start", "Ready in 2 minutes", "No LinkedIn login needed"].map((t) => (
                 <li key={t} className="flex items-center gap-1.5">
-                  <Check size={15} className="text-ok" /> {t}
+                  <Check size={16} className="text-ok" /> {t}
                 </li>
               ))}
             </ul>
           </div>
-          <ProductMock />
+          <CallListMock />
         </section>
 
-        {/* Problem */}
-        <section className="border-y border-line bg-surface">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <SectionTitle
-              eyebrow="The problem"
-              title="Most “hiring signals” are noise"
-              intro="A company posting 30 jobs tells you nothing. A sneaker brand hiring cashiers for its stores is not about to buy a CRM. What matters is where the hiring happens."
-            />
-            <div className="mt-12 grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-line bg-bg p-6">
-                <div className="flex items-center gap-2 text-[14px] font-semibold text-danger-fg">
-                  <X size={16} /> What other tools show you
-                </div>
-                <ul className="mt-4 space-y-3 text-[15px]">
-                  {[
-                    "“Company X is hiring” (but for which team?)",
-                    "Store, warehouse and call-center roles mixed in",
-                    "A score with no explanation",
-                    "Lists you still have to research one by one",
-                  ].map((t) => (
-                    <li key={t} className="flex gap-2.5 text-muted">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-muted/60" /> {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="rounded-2xl border border-accent/40 bg-accent-soft/50 p-6">
-                <div className="flex items-center gap-2 text-[14px] font-semibold text-accent">
-                  <Check size={16} /> What Hiring Signals shows you
-                </div>
-                <ul className="mt-4 space-y-3 text-[15px]">
-                  {[
-                    "4 sales roles in one division: Sales · Wholesale · DACH",
-                    "Shop-floor and call-center roles filtered out",
-                    "Every score explained: “+20 new leader, 21 days in”",
-                    "The decision maker, their stack and a first message",
-                  ].map((t) => (
-                    <li key={t} className="flex gap-2.5">
-                      <Check size={16} className="mt-0.5 shrink-0 text-ok" /> {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        {/* Pain */}
+        <section className="bg-surface py-24">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="max-w-2xl">
+              <Eyebrow>Sound familiar?</Eyebrow>
+              <h2 className="mt-4 text-[32px] leading-tight font-extrabold tracking-tight sm:text-[44px]">
+                Cold outreach is hard when you don’t know <Highlight>why now.</Highlight>
+              </h2>
             </div>
+            <div className="mt-12 grid gap-5 md:grid-cols-3">
+              {[
+                {
+                  icon: <Coffee size={22} />,
+                  title: "Hours of research",
+                  text: "Ten tabs per account just to find one thing worth saying. By lunch, you’ve called nobody.",
+                },
+                {
+                  icon: <MessageCircle size={22} />,
+                  title: "Messages that get ignored",
+                  text: "“Hope you’re well, quick question…” Everyone sends it. Nobody answers it.",
+                },
+                {
+                  icon: <Clock size={22} />,
+                  title: "Right company, wrong time",
+                  text: "You reach them six months too early, or a week after they signed with someone else.",
+                },
+              ].map((p) => (
+                <div key={p.title} className="rounded-3xl bg-bg p-7">
+                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-danger-bg text-danger-fg">{p.icon}</span>
+                  <h3 className="mt-5 text-[20px] font-bold">{p.title}</h3>
+                  <p className="mt-2 text-[16px] leading-relaxed text-muted">{p.text}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-10 text-center text-[20px] font-semibold sm:text-[24px]">
+              The fix isn’t more calls. It’s <span className="text-accent">better timing</span>.
+            </p>
           </div>
         </section>
 
         {/* How it works */}
-        <section id="how" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
-          <SectionTitle eyebrow="How it works" title="From a LinkedIn URL to a first message in three steps" />
-          <ol className="mt-12 grid gap-4 md:grid-cols-3">
+        <section id="how" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-24 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow>How it works</Eyebrow>
+            <h2 className="mt-4 text-[32px] leading-tight font-extrabold tracking-tight sm:text-[44px]">
+              From LinkedIn link to booked meeting
+            </h2>
+          </div>
+          <ol className="mt-14 grid gap-5 lg:grid-cols-3">
             {[
               {
-                icon: <Link2 size={20} />,
-                title: "Paste a LinkedIn URL",
-                text: "A person or a company, or up to 25 at once. That is all you do.",
+                n: "1",
+                icon: <Link2 size={22} />,
+                title: "Paste a LinkedIn link",
+                text: "A person or a company. Or let us scan the market for you.",
+                visual: (
+                  <div className="flex items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5 text-[13px] text-muted">
+                    <Search size={15} /> linkedin.com/company/laufwerk
+                  </div>
+                ),
               },
               {
-                icon: <Search size={20} />,
-                title: "We do the research",
-                text: "We read the profile, the company and every open job ad, sort each role into its division and drop the ones that don't count.",
+                n: "2",
+                icon: <Sparkles size={22} />,
+                title: "We find your reason to call",
+                text: "Who is hiring salespeople, who’s the new boss, and how hot the account is.",
+                visual: (
+                  <div className="space-y-1.5">
+                    {["Hiring 4 sales reps", "New Head of Sales, 21 days in", "Uses Salesforce today"].map((r) => (
+                      <div key={r} className="flex items-center gap-2 text-[13px] font-medium">
+                        <Check size={15} className="text-ok" /> {r}
+                      </div>
+                    ))}
+                  </div>
+                ),
               },
               {
-                icon: <Target size={20} />,
-                title: "You get a ranked account",
-                text: "A priority score, the reasons behind it, who to contact, and an opener in their language. Ready to call.",
+                n: "3",
+                icon: <Send size={22} />,
+                title: "Send a message that lands",
+                text: "Get a short, personal first message in German or English. You hit send.",
+                visual: (
+                  <div className="rounded-xl rounded-bl-sm bg-accent px-3 py-2.5 text-[13px] leading-snug text-accent-fg">
+                    “Congrats on the new role, Jonas! How are you onboarding the 4 new reps?”
+                  </div>
+                ),
               },
-            ].map((s, i) => (
-              <li key={s.title} className="relative rounded-2xl border border-line bg-surface p-6">
+            ].map((s) => (
+              <li key={s.n} className="flex flex-col rounded-3xl border border-line bg-surface p-7">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent">{s.icon}</span>
-                  <span className="text-[13px] font-semibold text-muted">Step {i + 1}</span>
+                  <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-accent-soft text-accent">{s.icon}</span>
+                  <span className="text-[40px] leading-none font-extrabold text-line">{s.n}</span>
                 </div>
-                <h3 className="mt-4 text-[18px] font-semibold">{s.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-muted">{s.text}</p>
+                <h3 className="mt-5 text-[20px] font-bold">{s.title}</h3>
+                <p className="mt-2 text-[16px] leading-relaxed text-muted">{s.text}</p>
+                <div className="mt-6 rounded-2xl bg-bg p-4">{s.visual}</div>
               </li>
             ))}
           </ol>
+        </section>
 
-          {/* What a hiring cluster is */}
-          <div className="mt-6 grid items-center gap-8 rounded-2xl border border-line bg-surface p-6 sm:p-8 lg:grid-cols-2">
+        {/* Why timing wins */}
+        <section id="why" className="scroll-mt-20 bg-accent text-accent-fg">
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-24 sm:px-6 lg:grid-cols-2">
             <div>
-              <div className="text-[13px] font-semibold tracking-wide text-accent uppercase">The idea behind it</div>
-              <h3 className="mt-2 text-[24px] leading-tight font-semibold tracking-tight">Hiring clusters: the moment a team gets built</h3>
-              <p className="mt-3 text-[15px] leading-relaxed text-muted">
-                When a company hires several SDRs and AEs <b className="text-fg">in the same division</b>, often under a{" "}
-                <b className="text-fg">new sales leader</b>, it is building a team. New teams need process, tools and onboarding. New
-                leaders change tools in their first 90 days. That is when your call lands.
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[13px] font-semibold">
+                <TrendingUp size={14} /> Why timing wins
+              </div>
+              <h2 className="mt-4 text-[32px] leading-tight font-extrabold tracking-tight sm:text-[44px]">
+                A company hiring salespeople is a company about to buy.
+              </h2>
+              <p className="mt-5 text-[18px] leading-relaxed opacity-90">
+                New sales team means new tools, new processes and a new budget. And a new sales leader makes their biggest decisions
+                in the first 90 days. We tell you the moment it starts, so you’re the first call, not the fifth.
+              </p>
+              <p className="mt-5 text-[16px] opacity-90">
+                We also filter out the noise: a shop hiring cashiers is not a sales team. You only see the real ones.
               </p>
             </div>
-            <div className="space-y-2.5">
-              {[
-                { label: "Sales · Wholesale · DACH", roles: ["SDR", "SDR", "AE", "Head of Sales"], counted: true },
-                { label: "Sales · Retail Stores · DACH", roles: ["Sales Associate"], counted: false },
-              ].map((d) => (
-                <div key={d.label} className={`rounded-xl border p-4 ${d.counted ? "border-accent/40 bg-accent-soft/40" : "border-line bg-bg opacity-80"}`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[14px] font-semibold">{d.label}</span>
-                    {d.counted ? (
-                      <span className="rounded-md bg-hot-bg px-1.5 text-[12px] font-semibold text-hot-fg">Cluster · 95</span>
-                    ) : (
-                      <span className="rounded-md bg-surface-2 px-1.5 text-[12px] font-medium text-muted">Not counted</span>
-                    )}
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {d.roles.map((r, i) => (
-                      <span key={i} className={`rounded-md px-2 py-0.5 text-[12px] font-medium ${d.counted ? "bg-surface text-fg" : "bg-surface-2 text-muted line-through"}`}>
-                        {r}
-                      </span>
-                    ))}
-                  </div>
+
+            {/* Timeline */}
+            <div className="rounded-3xl bg-white/10 p-6 sm:p-8">
+              <div className="text-[14px] font-semibold opacity-90">A new Head of Sales starts</div>
+              <ol className="relative mt-6 space-y-6 border-l-2 border-white/30 pl-6">
+                {[
+                  { day: "Day 1", text: "Starts the job, looks at what’s broken", tag: null },
+                  { day: "Day 21", text: "Posts 4 sales jobs at once", tag: "We flag it here" },
+                  { day: "Day 45", text: "Picks tools and partners for the new team", tag: "Best time to call" },
+                  { day: "Day 90", text: "Decisions made. Door closes.", tag: null },
+                ].map((t) => (
+                  <li key={t.day} className="relative">
+                    <span className="absolute top-1 -left-[33px] size-4 rounded-full border-2 border-white bg-accent" />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[15px] font-bold">{t.day}</span>
+                      {t.tag && <span className="rounded-full bg-sun px-2.5 py-0.5 text-[12px] font-bold text-[#3b2a00]">{t.tag}</span>}
+                    </div>
+                    <div className="mt-0.5 text-[15px] opacity-90">{t.text}</div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        {/* What you get */}
+        <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow>What you get</Eyebrow>
+            <h2 className="mt-4 text-[32px] leading-tight font-extrabold tracking-tight sm:text-[44px]">Everything you need before you dial</h2>
+          </div>
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { icon: <Flame size={22} />, title: "A ranked call list", text: "Hot, warm, cold. Start at the top every morning." },
+              { icon: <Target size={22} />, title: "The reason to call", text: "One line you can actually use: “new sales boss, hiring 4 reps”." },
+              { icon: <UserPlus size={22} />, title: "The right person", text: "Who decides, how long they’ve been there, where they worked before." },
+              { icon: <Sparkles size={22} />, title: "A first message, written", text: "Short, personal, no fluff. Edit it or send it as is." },
+              { icon: <Users size={22} />, title: "No stepping on toes", text: "Claim an account and your teammates won’t contact it too." },
+              { icon: <CalendarCheck size={22} />, title: "What books meetings", text: "See which messages get replies and the best time to send." },
+            ].map((f) => (
+              <div key={f.title} className="rounded-3xl border border-line bg-surface p-7 transition hover:-translate-y-0.5 hover:shadow-lg">
+                <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-sun-soft text-sun-ink">{f.icon}</span>
+                <h3 className="mt-5 text-[19px] font-bold">{f.title}</h3>
+                <p className="mt-2 text-[16px] leading-relaxed text-muted">{f.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Before / after */}
+        <section className="bg-surface py-24">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <Eyebrow>Your morning</Eyebrow>
+              <h2 className="mt-4 text-[32px] leading-tight font-extrabold tracking-tight sm:text-[44px]">Less digging. More dialing.</h2>
+            </div>
+            <div className="mt-12 grid gap-5 md:grid-cols-2">
+              <div className="rounded-3xl bg-bg p-7">
+                <div className="flex items-center gap-2 text-[15px] font-bold text-muted">
+                  <X size={18} className="text-danger-fg" /> Without Hiring Signals
                 </div>
-              ))}
+                <ul className="mt-5 space-y-3.5 text-[16px] text-muted">
+                  {[
+                    "Scroll job boards and LinkedIn for an hour",
+                    "Guess who the decision maker is",
+                    "Write the same opener for everyone",
+                    "Find out a colleague already called them",
+                  ].map((t) => (
+                    <li key={t} className="flex gap-3">
+                      <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-muted/50" /> {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-3xl bg-accent-soft p-7 ring-2 ring-accent/30">
+                <div className="flex items-center gap-2 text-[15px] font-bold text-accent">
+                  <Check size={18} /> With Hiring Signals
+                </div>
+                <ul className="mt-5 space-y-3.5 text-[16px] font-medium">
+                  {[
+                    "Open your list: the hottest accounts are on top",
+                    "See who to contact and why, in one line",
+                    "Send a message written for that person",
+                    "Claimed accounts stay yours",
+                  ].map((t) => (
+                    <li key={t} className="flex gap-3">
+                      <Check size={18} className="mt-0.5 shrink-0 text-ok" /> {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Who it's for */}
-        <section id="who" className="scroll-mt-20 border-y border-line bg-surface">
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <SectionTitle eyebrow="Who it's for" title="Built for the people who start conversations" />
-            <div className="mt-12 grid gap-4 md:grid-cols-3">
-              {[
-                {
-                  icon: <Users size={20} />,
-                  who: "SDRs & BDRs",
-                  text: "Start the day with a shortlist of accounts to call, the reason to call each one and a first message you can send in a minute.",
-                  points: ["“Call these first” every morning", "Openers that reference real facts", "One-click outreach logging"],
-                },
-                {
-                  icon: <Target size={20} />,
-                  who: "Account Executives",
-                  text: "Walk into first calls knowing who owns the budget, what they use today and how the team is changing.",
-                  points: ["Decision maker and days in role", "Current CRM from the job ads", "Buying-window countdown"],
-                },
-                {
-                  icon: <BarChart3 size={20} />,
-                  who: "Sales leaders & RevOps",
-                  text: "Point the team at the accounts that matter, see which angles get replies and keep everyone off each other's accounts.",
-                  points: ["Claims stop double-touches", "Reply rate by angle and time", "Adjustable scoring weights"],
-                },
-              ].map((p) => (
-                <div key={p.who} className="flex flex-col rounded-2xl border border-line bg-bg p-6">
-                  <span className="inline-flex size-10 items-center justify-center rounded-xl bg-accent-soft text-accent">{p.icon}</span>
-                  <h3 className="mt-4 text-[18px] font-semibold">{p.who}</h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-muted">{p.text}</p>
-                  <ul className="mt-4 space-y-2 border-t border-line pt-4 text-[14px]">
-                    {p.points.map((t) => (
-                      <li key={t} className="flex gap-2">
-                        <Check size={15} className="mt-0.5 shrink-0 text-ok" /> {t}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+        <section id="who" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-24 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow>Who it’s for</Eyebrow>
+            <h2 className="mt-4 text-[32px] leading-tight font-extrabold tracking-tight sm:text-[44px]">Made for people with a quota</h2>
           </div>
-        </section>
-
-        {/* Features */}
-        <section id="features" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
-          <SectionTitle eyebrow="Features" title="Everything between the signal and the first reply" />
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-5 md:grid-cols-3">
             {[
-              { icon: <Gauge size={18} />, title: "Hiring Cluster Index", text: "0–100 per division: open roles, leader + team mix, new leader, CRM in job ads, velocity." },
-              { icon: <ListChecks size={18} />, title: "Explainable scores", text: "Cluster, fit, timing and reach, each with its reasons. Never a number without the why." },
-              { icon: <UserCheck size={18} />, title: "Decision-maker context", text: "Days in role, previous companies, tools they used before and what they post about." },
-              { icon: <MessageSquareText size={18} />, title: "AI openers", text: "A connection note, first message and e-mail for the angle you pick, in German or English." },
-              { icon: <BarChart3 size={18} />, title: "Outreach analytics", text: "Funnel, reply rate by angle, the best time to send and a team leaderboard." },
-              { icon: <Database size={18} />, title: "CRM push", text: "Send accounts, contacts and the reasons to HubSpot, Salesforce, Pipedrive or a webhook.", soon: true },
-            ].map((f) => (
-              <div key={f.title} className="rounded-2xl border border-line bg-surface p-5">
-                <div className="flex items-center gap-2.5">
-                  <span className="inline-flex size-9 items-center justify-center rounded-lg bg-accent-soft text-accent">{f.icon}</span>
-                  <h3 className="text-[16px] font-semibold">{f.title}</h3>
-                  {f.soon && <span className="ml-auto rounded-md bg-warm-bg px-1.5 text-[11px] font-semibold text-warm-fg">Soon</span>}
-                </div>
-                <p className="mt-3 text-[14px] leading-relaxed text-muted">{f.text}</p>
+              {
+                role: "SDRs & BDRs",
+                line: "Hit your meeting target without the research grind.",
+                points: ["A fresh call list every morning", "Openers that sound like you did your homework"],
+              },
+              {
+                role: "Account Executives",
+                line: "Walk into first calls already knowing the story.",
+                points: ["Who owns the budget", "What they use today and what’s changing"],
+              },
+              {
+                role: "Sales leaders",
+                line: "Point the team at the accounts that matter most.",
+                points: ["No double-touches between reps", "See which messages and timing work"],
+              },
+            ].map((p) => (
+              <div key={p.role} className="flex flex-col rounded-3xl border border-line bg-surface p-7">
+                <h3 className="text-[22px] font-extrabold">{p.role}</h3>
+                <p className="mt-2 text-[17px] leading-relaxed text-muted">{p.line}</p>
+                <ul className="mt-6 space-y-2.5 border-t border-line pt-5 text-[15px] font-medium">
+                  {p.points.map((t) => (
+                    <li key={t} className="flex gap-2.5">
+                      <Check size={17} className="mt-0.5 shrink-0 text-ok" /> {t}
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
-          </div>
-
-          <div className="mt-6 flex flex-col items-start gap-4 rounded-2xl border border-line bg-surface p-6 sm:flex-row sm:items-center">
-            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
-              <ShieldCheck size={20} />
-            </span>
-            <div>
-              <h3 className="text-[16px] font-semibold">You stay in control on LinkedIn</h3>
-              <p className="mt-1 text-[14px] leading-relaxed text-muted">
-                Hiring Signals never logs into your LinkedIn account and never sends messages for you. It writes the draft, opens the
-                profile, and you hit send. We store only business information about people, and keep it for a limited time.
-              </p>
-            </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="scroll-mt-20 border-t border-line bg-surface">
-          <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-            <SectionTitle eyebrow="FAQ" title="Questions people ask" />
-            <div className="mt-10 divide-y divide-line rounded-2xl border border-line bg-bg">
+        <section id="faq" className="scroll-mt-20 bg-surface py-24">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <div className="text-center">
+              <Eyebrow>FAQ</Eyebrow>
+              <h2 className="mt-4 text-[32px] leading-tight font-extrabold tracking-tight sm:text-[44px]">Good questions</h2>
+            </div>
+            <div className="mt-10 space-y-3">
               {[
                 {
-                  q: "Where does the data come from?",
-                  a: "From public sources: LinkedIn company and profile pages and the company's job ads. You paste the URL, we research it and keep the source and date on every profile.",
+                  q: "Where do the insights come from?",
+                  a: "From public information: company pages, LinkedIn profiles and job ads. We put it together so you don’t have to.",
                 },
                 {
-                  q: "What exactly is a “hiring cluster”?",
-                  a: "Two or more open sales roles in the same division (function + business unit + region) within 45 days, or a sales leader in their first 90 days plus at least one open role. Roles in different divisions never add up, and store or call-center roles never count.",
+                  q: "Does it message people on LinkedIn for me?",
+                  a: "No. We write the message and open the profile. You decide what to send, so your account stays safe and it still sounds like you.",
                 },
                 {
-                  q: "Does it send messages on LinkedIn for me?",
-                  a: "No. It drafts the message and opens the profile. You send it yourself and log it with one click, so you stay within LinkedIn's rules.",
+                  q: "Why do companies hiring salespeople make good prospects?",
+                  a: "A growing sales team needs tools, training and processes, and a new sales leader usually changes things in their first 90 days. That’s when they’re open to a conversation.",
                 },
                 {
-                  q: "Which CRMs does it work with?",
-                  a: "The CRM push for HubSpot, Salesforce, Pipedrive and custom webhooks is on the way. Until then you can work fully inside Hiring Signals.",
-                },
-                {
-                  q: "Is it GDPR compliant?",
-                  a: "It is built with GDPR in mind: only business-context data, limited retention, a delete button for people, and openers that can say where the data came from.",
+                  q: "Which markets do you cover?",
+                  a: "We started with Germany, Austria and Switzerland (DACH), and messages can be written in German or English.",
                 },
                 {
                   q: "Can my whole team use it?",
-                  a: "Yes. Create a workspace and invite teammates. Everyone sees the same accounts, and claims make sure two SDRs never contact the same company.",
+                  a: "Yes. Invite your team, share one list, and claim accounts so nobody calls the same company twice.",
+                },
+                {
+                  q: "Is it GDPR friendly?",
+                  a: "Yes. We only keep business information about people, for a limited time, and you can delete anyone with one click.",
                 },
               ].map((f) => (
-                <details key={f.q} className="group px-5 py-4 [&_summary::-webkit-details-marker]:hidden">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium">
+                <details key={f.q} className="group rounded-2xl bg-bg px-6 py-5 [&_summary::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-semibold">
                     {f.q}
-                    <span className="text-[20px] leading-none text-muted transition-transform group-open:rotate-45">+</span>
+                    <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-surface text-[18px] text-muted transition-transform group-open:rotate-45">
+                      +
+                    </span>
                   </summary>
-                  <p className="mt-3 text-[15px] leading-relaxed text-muted">{f.a}</p>
+                  <p className="mt-3 text-[16px] leading-relaxed text-muted">{f.a}</p>
                 </details>
               ))}
             </div>
@@ -458,25 +538,28 @@ export default function LandingPage() {
         </section>
 
         {/* Final CTA */}
-        <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <div className="relative overflow-hidden rounded-3xl bg-accent px-6 py-14 text-center text-accent-fg sm:px-12">
-            <div className="absolute -top-24 -right-24 size-72 rounded-full bg-white/10" aria-hidden />
-            <div className="absolute -bottom-28 -left-16 size-72 rounded-full bg-white/10" aria-hidden />
-            <h2 className="relative text-[28px] leading-tight font-semibold tracking-tight sm:text-[38px]">
-              Stop guessing who to call next.
+        <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+          <div className="relative overflow-hidden rounded-[36px] bg-sun px-6 py-16 text-center sm:px-12">
+            <div aria-hidden className="absolute -top-20 -left-16 size-64 rounded-full bg-white/30" />
+            <div aria-hidden className="absolute -right-20 -bottom-24 size-72 rounded-full bg-[#f5b400]/50" />
+            <h2 className="relative text-[34px] leading-tight font-extrabold tracking-tight text-[#2b2000] sm:text-[52px]">
+              Book more meetings this month.
             </h2>
-            <p className="relative mx-auto mt-3 max-w-xl text-[16px] opacity-90">
-              Create your workspace in a minute, load the demo accounts and see your first “Call today” list.
+            <p className="relative mx-auto mt-4 max-w-xl text-[18px] text-[#4a3800]">
+              Create your free account and see your first call list in two minutes.
             </p>
-            <div className="relative mt-8 flex flex-wrap justify-center gap-3">
+            <div className="relative mt-9 flex flex-wrap justify-center gap-3">
               <Link
                 href="/signup"
-                className="inline-flex h-11 items-center gap-2 rounded-xl bg-surface px-5 text-[15px] font-semibold text-fg shadow-sm hover:opacity-90"
+                className="group inline-flex h-12 items-center gap-2 rounded-full bg-[#1c1917] px-7 text-[16px] font-semibold text-white shadow-lg transition hover:-translate-y-0.5"
               >
-                Get started free <ArrowRight size={16} />
+                Get my call list <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
-              <Link href="/login" className="inline-flex h-11 items-center rounded-xl px-5 text-[15px] font-medium ring-1 ring-current/40 hover:bg-white/10">
-                Sign in
+              <Link
+                href="/login"
+                className="inline-flex h-12 items-center rounded-full px-6 text-[16px] font-semibold text-[#2b2000] ring-2 ring-[#2b2000]/25 hover:bg-white/30"
+              >
+                Log in
               </Link>
             </div>
           </div>
@@ -484,16 +567,16 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t border-line">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 py-8 text-[13px] text-muted sm:flex-row sm:items-center sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 px-4 py-10 text-[14px] text-muted sm:flex-row sm:items-center sm:px-6">
           <Logo />
-          <nav className="flex flex-wrap gap-5">
+          <nav className="flex flex-wrap gap-6">
             {NAV.map((n) => (
               <a key={n.href} href={n.href} className="hover:text-fg">
                 {n.label}
               </a>
             ))}
             <Link href="/login" className="hover:text-fg">
-              Sign in
+              Log in
             </Link>
           </nav>
           <span>© {new Date().getFullYear()} Hiring Signals</span>

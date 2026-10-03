@@ -12,6 +12,10 @@
   --accent: #047857;
   --accent-fg: #ffffff;
   --accent-soft: #e7f6ef;
+  /* Sunny yellow highlight (landing page, emphasis) */
+  --sun: #facc15;
+  --sun-soft: #fef6c7;
+  --sun-ink: #6b4e00;
   --hot-bg: #fff1eb;
   --hot-fg: #b4320c;
   --warm-bg: #fef6e2;
@@ -40,6 +44,9 @@
   --accent: #34d399;
   --accent-fg: #052e1c;
   --accent-soft: #0b2a20;
+  --sun: #facc15;
+  --sun-soft: #2e2606;
+  --sun-ink: #fde68a;
   --hot-bg: #3b1508;
   --hot-fg: #fdba8c;
   --warm-bg: #33240a;
@@ -80,6 +87,9 @@
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
+  --color-sun: var(--sun);
+  --color-sun-soft: var(--sun-soft);
+  --color-sun-ink: var(--sun-ink);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
