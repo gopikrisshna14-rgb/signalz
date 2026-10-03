@@ -2,7 +2,7 @@
 
 Dashboard for SDRs that ranks companies building a sales team inside one division ("hiring
 clusters"), shows the decision maker's LinkedIn context, helps write the first message, tracks
-outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, Apify, Claude.
+outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, Apify, Featherless.ai (LLM engine).
 
 - `src/`: the Next.js app (stage 1: sign-in, workspaces, Today dashboard, account details, outreach logging).
 - `BUILD_PROMPT.md`: the full spec the app is built from.
@@ -15,6 +15,8 @@ outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, 
 3. Settings → Environment Variables (from Supabase → Project Settings → API):
    - `NEXT_PUBLIC_SUPABASE_URL`: the Project URL.
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: the anon / publishable key.
+   - Optional, for "Write with AI": `FEATHERLESS_API_KEY` (Secret) and `FEATHERLESS_MODEL`
+     (Config, default `Qwen/Qwen2.5-7B-Instruct`).
    Then redeploy: `NEXT_PUBLIC_` values are baked in at build time.
 4. Supabase → Authentication → URL Configuration: set the Site URL to the Vercel URL and add
    `https://<your-app>.vercel.app/auth/callback` under Redirect URLs.
@@ -22,7 +24,7 @@ outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, 
 
 Local development: `cp .env.example .env.local`, fill in the two values, `npm install`, `npm run dev`.
 
-## What works in stage 1
+## What works now
 
 - E-mail + password sign-up / sign-in, password reset, Google sign-in (if enabled in Supabase).
 - Onboarding: create a workspace (`create_organization`), optionally load demo data (`seed_demo`).
@@ -32,11 +34,15 @@ Local development: `cp .env.example .env.local`, fill in the two values, `npm in
 - Account panel and `/accounts/[id]`: suppression warnings, why now, buying-window countdown,
   score breakdown, hiring clusters with "Not counted" postings, decision maker, angle picker with
   template-filled opener, copy & open LinkedIn, one-click outreach logging, activity timeline.
+- "Write with AI" on each account: connection note, first message and e-mail from Featherless.ai (`/api/opener`).
+- Outreach page: funnel, reply rate by angle, best time to send, weekly activity, leaderboard, activity
+  feed, templates. Clusters page: function × region heatmap, most-hired roles, new clusters per week,
+  hiring momentum, cluster list. Both show sample data until real rows exist (Sample / Live switch).
 - Claim / release accounts (`claim_account`), admin "Load demo data" and "Re-score all" in Settings.
 - Dark mode (follows the system, toggle in the top bar).
 
-Next: research pipeline (n8n + Apify + Claude), AI openers, clusters and outreach analytics,
-team & seats, ICP settings, CRM push, SSO.
+Next: research pipeline (n8n + Apify + Featherless, in progress), team & seats, ICP settings,
+template editor, CRM push, SSO.
 
 ## Set up the database
 

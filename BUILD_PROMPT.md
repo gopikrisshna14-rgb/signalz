@@ -22,7 +22,7 @@ shop-floor staff in a different division, and the app must exclude it.
 Primary flow:
 1. SDR pastes a LinkedIn URL (a person or a company) into the app.
 2. The app starts an **n8n** workflow; n8n runs **Apify** actors (profile, company, jobs),
-   classifies the jobs with Claude, and writes everything to **Supabase**.
+   classifies the jobs with an LLM on **Featherless.ai**, and writes everything to **Supabase**.
 3. Supabase's `recompute_company()` builds clusters and scores; the dashboard updates live (Realtime).
 4. SDR reads "why now", picks an angle, copies the suggested opener, opens LinkedIn, sends it
    manually, and logs the step with one click.
@@ -38,8 +38,9 @@ Also: a daily n8n run re-scrapes jobs for every tracked company so new clusters 
 - **Tailwind CSS v4** + **shadcn/ui** (Radix) + **lucide-react** icons.
 - **Recharts** for charts, **TanStack Table v8** for the account table, **cmdk** for the command palette,
   **sonner** for toasts, **zod** for every input and every webhook body, **nuqs** for filters in the URL.
-- **n8n** (cloud or self-hosted) for workflows, **Apify** for scraping, **Claude API** for
-  classification (`claude-haiku-4-5`) and openers (`claude-sonnet-5-5`), via `@anthropic-ai/sdk`.
+- **n8n** (cloud or self-hosted) for workflows, **Apify** for scraping, **Featherless.ai** as the LLM engine
+  (OpenAI-compatible API at `https://api.featherless.ai/v1`, open-weight models) for classification and openers.
+  Model names come from `FEATHERLESS_MODEL` (default `Qwen/Qwen2.5-7B-Instruct`), so they can be swapped.
 - No ORM. Query Supabase directly with typed clients. Browser uses the anon key + RLS;
   only Route Handlers that must bypass RLS use the service role key, and never in client code.
 
@@ -227,7 +228,7 @@ Modern B2B SaaS, in the style of Linear, Attio, Vercel and Clay: calm, dense, fa
    (name, domain, industry, employee_count, growth, HQ, description, logo).
 5. `status = 'scraping_jobs'`: Apify `APIFY_JOBS_ACTOR_ID` with the company's LinkedIn jobs search
    (last 60 days) and, if a careers URL is known, a website content crawler → list of postings.
-6. `status = 'classifying'`: Claude (`claude-haiku-4-5`, JSON output, batch of ≤ 20 postings) returns
+6. `status = 'classifying'`: Featherless.ai (`FEATHERLESS_MODEL`, JSON output, batch of ≤ 20 postings) returns
    per posting: `function`, `business_unit`, `region`, `role_family`, `seniority`, `crm_mentions[]`,
    `flags[]`, `is_excluded` + `exclusion_reason`. Also classify the person: `role_family`, `seniority`,
    `persona`, `is_decision_maker`, `prior_tools[]` (tools named in their past roles), division.
@@ -269,7 +270,7 @@ Prefer actors that do not need the user's LinkedIn cookie.
 
 ## 10. Outreach assistant
 
-- `POST /api/opener { company_id, person_id, angle }` → Claude (`claude-sonnet-5-5`) with the reasons,
+- `POST /api/opener { company_id, person_id, angle }` → Featherless.ai (`FEATHERLESS_MODEL`) with the reasons,
   division, person's last posts and prior tools. Output: connection note (≤ 300 chars), first message
   (≤ 700 chars), e-mail subject + body. Plain, specific, one question, no flattery, no fake familiarity,
   in the person's language (German for DACH unless their profile is English).
@@ -290,11 +291,11 @@ Prefer actors that do not need the user's LinkedIn cookie.
 ## 12. Environment variables
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
-`ANTHROPIC_API_KEY`, `N8N_RESEARCH_WEBHOOK_URL`, `N8N_WEBHOOK_SECRET`, `APP_URL`, `RESEND_API_KEY`,
+`FEATHERLESS_API_KEY`, `FEATHERLESS_MODEL`, `N8N_RESEARCH_WEBHOOK_URL`, `N8N_WEBHOOK_SECRET`, `APP_URL`, `RESEND_API_KEY`,
 `HUBSPOT_CLIENT_ID`, `HUBSPOT_CLIENT_SECRET`, `SALESFORCE_CLIENT_ID`, `SALESFORCE_CLIENT_SECRET`,
 `PIPEDRIVE_CLIENT_ID`, `PIPEDRIVE_CLIENT_SECRET`, `LINK_IP_SALT`.
 In n8n: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `APIFY_TOKEN`, `APIFY_PROFILE_ACTOR_ID`,
-`APIFY_COMPANY_ACTOR_ID`, `APIFY_JOBS_ACTOR_ID`, `ANTHROPIC_API_KEY`, `N8N_WEBHOOK_SECRET`, `APP_URL`.
+`APIFY_COMPANY_ACTOR_ID`, `APIFY_JOBS_ACTOR_ID`, `FEATHERLESS_API_KEY`, `FEATHERLESS_MODEL`, `N8N_WEBHOOK_SECRET`, `APP_URL`.
 Write `.env.example` with all of them and comments.
 
 ## 13. Data protection (the team is in Germany: GDPR applies)
@@ -316,7 +317,7 @@ Write `.env.example` with all of them and comments.
    sidebar layout, design tokens, dark mode.
 2. **Day 1 afternoon**: Today dashboard from `v_accounts` / `v_kpis` / `v_just_changed` with
    `seed_demo` data: KPI tiles, quadrant chart, tabs, filters, table, account drawer.
-3. **Day 2 morning**: `/research` + n8n workflow + Apify + Claude classification, Realtime queue.
+3. **Day 2 morning**: `/research` + n8n workflow + Apify + Featherless classification, Realtime queue.
 4. **Day 2 afternoon**: outreach assistant + logging + `/outreach` analytics; `/clusters` heatmaps.
 5. **Then**: Team & seats, invites, ICP settings + re-score, CRM field mapping + HubSpot push (dry run first),
    SSO, API keys, audit log.

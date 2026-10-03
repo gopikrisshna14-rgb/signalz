@@ -22,6 +22,11 @@
   --danger-fg: #b91c1c;
   --ok-fg: #047857;
   --orange: #f97316;
+  /* Chart slots (validated: all-pairs CVD ΔE ≥ 9 on #fff). Slot 3 is < 3:1, so it always ships with labels. */
+  --chart-1: #4f46e5;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --grid: #ececef;
   color-scheme: light;
 }
 
@@ -45,6 +50,10 @@
   --danger-fg: #fca5a5;
   --ok-fg: #6ee7b7;
   --orange: #fb923c;
+  --chart-1: #6f67ee;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --grid: #222226;
   color-scheme: dark;
 }
 
@@ -68,6 +77,9 @@
   --color-danger-fg: var(--danger-fg);
   --color-ok: var(--ok-fg);
   --color-orange: var(--orange);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }

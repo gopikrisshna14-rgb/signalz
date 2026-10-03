@@ -5,8 +5,8 @@ import type { Account } from "@/lib/types";
 import { BUCKET_LABELS } from "@/lib/types";
 
 const COLOR = {
-  call_today: "var(--accent)",
-  net_new: "var(--orange)",
+  call_today: "var(--chart-1)",
+  net_new: "var(--chart-2)",
   other: "var(--muted)",
 };
 
@@ -39,13 +39,13 @@ export function QuadrantChart({ accounts, onSelect }: { accounts: Account[]; onS
   };
 
   return (
-    <div className="relative h-[300px] w-full">
+    <div className="relative h-[280px] w-full">
       <span className="pointer-events-none absolute top-1 right-3 z-10 text-[12px] font-medium text-accent">Call today ↗</span>
       <span className="pointer-events-none absolute top-1 left-12 z-10 text-[12px] text-muted">↖ Right fit, not ready yet</span>
       <span className="pointer-events-none absolute right-3 bottom-9 z-10 text-[12px] text-muted">Qualify fast ↘</span>
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 20, right: 12, bottom: 16, left: -8 }}>
-          <CartesianGrid stroke="var(--border)" strokeDasharray="2 4" />
+          <CartesianGrid stroke="var(--grid)" />
           <XAxis
             type="number"
             dataKey="x"
@@ -67,9 +67,9 @@ export function QuadrantChart({ accounts, onSelect }: { accounts: Account[]; onS
           <ReferenceLine x={60} stroke="var(--muted)" strokeDasharray="4 4" />
           <ReferenceLine y={60} stroke="var(--muted)" strokeDasharray="4 4" />
           <Tooltip content={<TooltipCard />} cursor={false} />
-          <Scatter data={rest} fill={COLOR.other} fillOpacity={0.55} onClick={click} className="cursor-pointer" />
-          <Scatter data={netNew} fill={COLOR.net_new} fillOpacity={0.85} onClick={click} className="cursor-pointer" />
-          <Scatter data={callToday} fill={COLOR.call_today} fillOpacity={0.9} onClick={click} className="cursor-pointer" />
+          <Scatter data={rest} fill={COLOR.other} fillOpacity={0.55} stroke="var(--surface)" strokeWidth={2} onClick={click} className="cursor-pointer" />
+          <Scatter data={netNew} fill={COLOR.net_new} fillOpacity={0.9} stroke="var(--surface)" strokeWidth={2} onClick={click} className="cursor-pointer" />
+          <Scatter data={callToday} fill={COLOR.call_today} fillOpacity={0.95} stroke="var(--surface)" strokeWidth={2} onClick={click} className="cursor-pointer" />
         </ScatterChart>
       </ResponsiveContainer>
     </div>

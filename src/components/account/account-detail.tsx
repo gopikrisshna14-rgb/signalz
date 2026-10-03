@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Check, ChevronDown, Clock, Copy, ExternalLink, Lock, UserPlus } from "lucide-react";
+import { AlertTriangle, Check, ChevronDown, Clock, Copy, ExternalLink, Lock, Sparkles, UserPlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn, errorMessage, relativeTime } from "@/lib/format";
 import type { Account, Workspace } from "@/lib/types";
@@ -129,6 +129,9 @@ export function AccountDetail({
   const [angle, setAngle] = useState<string>("");
   const [message, setMessage] = useState("");
   const [logging, setLogging] = useState<string | null>(null);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [ai, setAi] = useState<{ connection_note: string; message: string; email_subject: string; email_body: string } | null>(null);
+  const [aiTab, setAiTab] = useState<"connection_note" | "message" | "email">("connection_note");
 
   const load = useCallback(async () => {
     const supabase = createClient();
@@ -170,6 +173,7 @@ export function AccountDetail({
   // Fill the template for the chosen angle with this account's facts.
   useEffect(() => {
     if (loading) return;
+    setAi(null);
     const chosen = angle || recommended;
     const tpl = templates.find((t) => t.angle === chosen);
     const best = clusters[0];
@@ -213,6 +217,32 @@ export function AccountDetail({
     toast.success(`Logged: ${EVENT_LABEL[type] ?? type}`);
     load();
     router.refresh();
+  }
+
+  async function writeWithAi() {
+    setAiBusy(true);
+    try {
+      const res = await fetch("/api/opener", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company_id: account.id, angle: angle || recommended }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message ?? data.error ?? "Could not write the opener");
+      setAi(data);
+      setAiTab("connection_note");
+      setMessage(data.connection_note);
+    } catch (e) {
+      toast.error(errorMessage(e));
+    } finally {
+      setAiBusy(false);
+    }
+  }
+
+  function showAi(tab: "connection_note" | "message" | "email") {
+    if (!ai) return;
+    setAiTab(tab);
+    setMessage(tab === "email" ? `${ai.email_subject}\n\n${ai.email_body}`.trim() : ai[tab]);
   }
 
   async function copyAndOpen() {
@@ -495,6 +525,27 @@ export function AccountDetail({
             );
           })}
         </div>
+        {ai && (
+          <div className="mt-3 flex gap-1 text-[12px]" role="tablist" aria-label="AI drafts">
+            {(
+              [
+                ["connection_note", "Connection note"],
+                ["message", "First message"],
+                ["email", "E-mail"],
+              ] as const
+            ).map(([k, l]) => (
+              <button
+                key={k}
+                role="tab"
+                aria-selected={aiTab === k}
+                onClick={() => showAi(k)}
+                className={cn("h-7 rounded-md px-2.5 font-medium", aiTab === k ? "bg-surface-2 text-fg" : "text-muted hover:text-fg")}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+        )}
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -507,9 +558,14 @@ export function AccountDetail({
           <span>★ recommended angle</span>
           <span className={cn("tabular", message.length > 300 && "text-danger-fg")}>{message.length}/300 for a connection note</span>
         </div>
-        <Button variant="primary" size="sm" className="mt-2" onClick={copyAndOpen} disabled={!message}>
-          <Copy size={13} /> Copy &amp; open LinkedIn
-        </Button>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Button variant="primary" size="sm" onClick={copyAndOpen} disabled={!message}>
+            <Copy size={13} /> Copy &amp; open LinkedIn
+          </Button>
+          <Button size="sm" onClick={writeWithAi} disabled={aiBusy}>
+            <Sparkles size={13} /> {aiBusy ? "Writing…" : ai ? "Rewrite with AI" : "Write with AI"}
+          </Button>
+        </div>
 
         <div className="mt-4 border-t border-line pt-3">
           <div className="mb-2 text-[12px] font-medium text-muted">Log what you did</div>

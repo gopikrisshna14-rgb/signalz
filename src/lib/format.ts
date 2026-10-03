@@ -1,6 +1,20 @@
 import { clsx, type ClassValue } from "clsx";
+import { extendTailwindMerge } from "tailwind-merge";
 
-export const cn = (...inputs: ClassValue[]) => clsx(inputs);
+// Teach tailwind-merge the theme's colour tokens so a later "bg-accent-soft" replaces "bg-surface-2".
+const twMerge = extendTailwindMerge({
+  extend: {
+    theme: {
+      color: [
+        "bg", "surface", "surface-2", "line", "fg", "muted", "accent", "accent-fg", "accent-soft",
+        "hot-bg", "hot-fg", "warm-bg", "warm-fg", "cold-bg", "cold-fg", "danger-bg", "danger-fg",
+        "ok", "orange", "chart-1", "chart-2", "chart-3",
+      ],
+    },
+  },
+});
+
+export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 export function relativeTime(iso: string | null | undefined): string {
   if (!iso) return "—";
