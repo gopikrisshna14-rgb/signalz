@@ -6,7 +6,8 @@ outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, 
 
 - `src/`: the Next.js app (stage 1: sign-in, workspaces, Today dashboard, account details, outreach logging).
 - `BUILD_PROMPT.md`: the full spec the app is built from.
-- `supabase/`: the database (tables, row-level security, scoring, dashboard views, demo data).
+- `supabase/`: the database (tables, row-level security, scoring, dashboard views, demo data, research ingest).
+- `n8n/`: the research workflow (import file, pipeline code, setup guide and the data contract).
 
 ## Deploy on Vercel
 
@@ -34,6 +35,8 @@ Local development: `cp .env.example .env.local`, fill in the two values, `npm in
 - Account panel and `/accounts/[id]`: suppression warnings, why now, buying-window countdown,
   score breakdown, hiring clusters with "Not counted" postings, decision maker, angle picker with
   template-filled opener, copy & open LinkedIn, one-click outreach logging, activity timeline.
+- Research page: paste up to 25 LinkedIn URLs, live progress per request, Retry; the app sends each URL
+  to n8n with a signed webhook (`/api/research`). Setup: `n8n/README.md`.
 - "Write with AI" on each account: connection note, first message and e-mail from Featherless.ai (`/api/opener`).
 - Outreach page: funnel, reply rate by angle, best time to send, weekly activity, leaderboard, activity
   feed, templates. Clusters page: function × region heatmap, most-hired roles, new clusters per week,
@@ -41,7 +44,7 @@ Local development: `cp .env.example .env.local`, fill in the two values, `npm in
 - Claim / release accounts (`claim_account`), admin "Load demo data" and "Re-score all" in Settings.
 - Dark mode (follows the system, toggle in the top bar).
 
-Next: research pipeline (n8n + Apify + Featherless, in progress), team & seats, ICP settings,
+Next: daily refresh workflow, team & seats, ICP settings,
 template editor, CRM push, SSO.
 
 ## Set up the database
@@ -59,6 +62,9 @@ In the Supabase SQL Editor, run the scripts in order, each once (all are safe to
    and the views the dashboard reads.
 5. `005_demo_seed.sql` (optional): `seed_demo(org_id)` with eight fictional companies, among them
    a sneaker brand with a Wholesale DACH cluster and a shop-floor role that is correctly not counted.
+
+6. `006_research_ingest.sql`: `set_research_status` and `ingest_research` (called by n8n with the
+   service key), `mark_research_dispatch` and `retry_research` (called by the app).
 
 After signing up and creating a workspace in the app:
 `select public.seed_demo('<org id>');` (or the admin's "Load demo data" button).
