@@ -241,7 +241,7 @@ export function Dashboard({ workspace, accounts, kpis, justChanged, owners, load
         </h1>
         <p className="mt-0.5 text-[14px] text-muted">
           {accounts.length === 0 ? (
-            <>Welcome to Hiring Signals. Let&apos;s find your first accounts.</>
+            <>Welcome to Signalz. Let&apos;s find your first accounts.</>
           ) : (
             <>
               <span className="font-medium text-fg">{callTodayCount} to call today</span>

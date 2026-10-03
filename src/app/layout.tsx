@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Hiring Signals",
+  title: "Signalz",
   description: "Find companies building a sales team inside one division, right now.",
 };
 

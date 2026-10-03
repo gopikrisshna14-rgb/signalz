@@ -28,7 +28,7 @@ export default async function OnboardingPage() {
         </p>
         <OnboardingForm suggestedName={company ? company.charAt(0).toUpperCase() + company.slice(1) : ""} />
         <p className="mt-6 text-[13px] text-muted">
-          Your company already uses Hiring Signals? Ask your admin for an invite instead.
+          Your company already uses Signalz? Ask your admin for an invite instead.
         </p>
       </div>
     </main>

@@ -1,4 +1,4 @@
-# Hiring Signals
+# Signalz
 
 Dashboard for SDRs that ranks companies building a sales team inside one division ("hiring
 clusters"), shows the decision maker's LinkedIn context, helps write the first message, tracks

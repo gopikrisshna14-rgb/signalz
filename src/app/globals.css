@@ -64,6 +64,32 @@
   color-scheme: dark;
 }
 
+/* Marketing page: always the warm light look, whatever the app theme. */
+.landing {
+  --bg: #fbf7ef;
+  --surface: #ffffff;
+  --surface-2: #f3eee3;
+  --border: #e8e1d3;
+  --text: #1d1a14;
+  --muted: #6b6457;
+  --accent: #0f6b4b;
+  --accent-fg: #ffffff;
+  --accent-soft: #e4f2ea;
+  --sun: #f7c948;
+  --sun-soft: #fdf1c9;
+  --sun-ink: #6b4e00;
+  --hot-bg: #fdebe1;
+  --hot-fg: #b4320c;
+  --warm-bg: #fdf1d6;
+  --warm-fg: #8a5a00;
+  --danger-bg: #fbe9e7;
+  --danger-fg: #b3261e;
+  --ok-fg: #0f6b4b;
+  color-scheme: light;
+  background: var(--bg);
+  color: var(--text);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);

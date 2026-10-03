@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <span className="inline-flex size-7 items-center justify-center rounded-lg bg-accent text-accent-fg">
             <Radar size={16} />
           </span>
-          Hiring Signals
+          Signalz
         </Link>
         {children}
       </div>
