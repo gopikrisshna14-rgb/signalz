@@ -55,7 +55,7 @@ function PrimaryCta({ children = "Get my call list", className = "" }: { childre
   return (
     <Link
       href="/signup"
-      className={`group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-[16px] font-semibold text-accent-fg shadow-[0_8px_24px_-8px_var(--accent)] transition hover:-translate-y-0.5 hover:opacity-95 ${className}`}
+      className={`group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-[16px] font-semibold text-accent-fg transition hover:-translate-y-0.5 hover:opacity-95 ${className}`}
     >
       {children}
       <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
@@ -551,7 +551,7 @@ export default function LandingPage() {
             <div className="relative mt-9 flex flex-wrap justify-center gap-3">
               <Link
                 href="/signup"
-                className="group inline-flex h-12 items-center gap-2 rounded-full bg-[#1c1917] px-7 text-[16px] font-semibold text-white shadow-lg transition hover:-translate-y-0.5"
+                className="group inline-flex h-12 items-center gap-2 rounded-full bg-[#1c1917] px-7 text-[16px] font-semibold text-white transition hover:-translate-y-0.5"
               >
                 Get my call list <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
