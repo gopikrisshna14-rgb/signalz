@@ -4,8 +4,39 @@ Dashboard for SDRs that ranks companies building a sales team inside one divisio
 clusters"), shows the decision maker's LinkedIn context, helps write the first message, tracks
 outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, Apify, Claude.
 
-- `BUILD_PROMPT.md`: the prompt to paste into Claude Code to build the app.
+- `src/`: the Next.js app (stage 1: sign-in, workspaces, Today dashboard, account details, outreach logging).
+- `BUILD_PROMPT.md`: the full spec the app is built from.
 - `supabase/`: the database (tables, row-level security, scoring, dashboard views, demo data).
+
+## Deploy on Vercel
+
+1. Run the database scripts below in Supabase first.
+2. Import this repository in Vercel. Root Directory: the repo root. Framework: Next.js (set in `vercel.json`).
+3. Settings → Environment Variables (from Supabase → Project Settings → API):
+   - `NEXT_PUBLIC_SUPABASE_URL`: the Project URL.
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: the anon / publishable key.
+   Then redeploy: `NEXT_PUBLIC_` values are baked in at build time.
+4. Supabase → Authentication → URL Configuration: set the Site URL to the Vercel URL and add
+   `https://<your-app>.vercel.app/auth/callback` under Redirect URLs.
+5. Open the app, sign up, create a workspace (tick "Load demo data").
+
+Local development: `cp .env.example .env.local`, fill in the two values, `npm install`, `npm run dev`.
+
+## What works in stage 1
+
+- E-mail + password sign-up / sign-in, password reset, Google sign-in (if enabled in Supabase).
+- Onboarding: create a workspace (`create_organization`), optionally load demo data (`seed_demo`).
+- Today dashboard: KPI tiles (click to filter), "Hiring intent vs fit" quadrant chart, "Just changed"
+  feed, bucket tabs with counts, filters, sortable account table (cards on mobile), keyboard `j/k/Enter/c`,
+  live updates through Supabase Realtime.
+- Account panel and `/accounts/[id]`: suppression warnings, why now, buying-window countdown,
+  score breakdown, hiring clusters with "Not counted" postings, decision maker, angle picker with
+  template-filled opener, copy & open LinkedIn, one-click outreach logging, activity timeline.
+- Claim / release accounts (`claim_account`), admin "Load demo data" and "Re-score all" in Settings.
+- Dark mode (follows the system, toggle in the top bar).
+
+Next: research pipeline (n8n + Apify + Claude), AI openers, clusters and outreach analytics,
+team & seats, ICP settings, CRM push, SSO.
 
 ## Set up the database
 
