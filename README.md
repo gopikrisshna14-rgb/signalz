@@ -27,6 +27,9 @@ Local development: `cp .env.example .env.local`, fill in the two values, `npm in
 
 ## What works now
 
+- Public landing page (`/welcome`, shown at `/` to visitors who are not signed in): what the tool is,
+  who it is for, how it works, features, FAQ and sign-up buttons.
+
 - E-mail + password sign-up / sign-in, password reset, Google sign-in (if enabled in Supabase).
 - Onboarding: create a workspace (`create_organization`), optionally load demo data (`seed_demo`).
 - Today dashboard: KPI tiles (click to filter), "Hiring intent vs fit" quadrant chart, "Just changed"
