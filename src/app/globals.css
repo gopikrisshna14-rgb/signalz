@@ -9,9 +9,9 @@
   --border: #e4e4e7;
   --text: #18181b;
   --muted: #71717a;
-  --accent: #4f46e5;
+  --accent: #047857;
   --accent-fg: #ffffff;
-  --accent-soft: #eef2ff;
+  --accent-soft: #e7f6ef;
   --hot-bg: #fff1eb;
   --hot-fg: #b4320c;
   --warm-bg: #fef6e2;
@@ -22,10 +22,10 @@
   --danger-fg: #b91c1c;
   --ok-fg: #047857;
   --orange: #f97316;
-  /* Chart slots (validated: all-pairs CVD ΔE ≥ 9 on #fff). Slot 3 is < 3:1, so it always ships with labels. */
-  --chart-1: #4f46e5;
+  /* Chart slots: green, orange, blue (validated all-pairs: CVD ΔE ≥ 8.3, contrast ≥ 3:1 on #fff). */
+  --chart-1: #0d9f6e;
   --chart-2: #eb6834;
-  --chart-3: #1baf7a;
+  --chart-3: #2a78d6;
   --grid: #ececef;
   color-scheme: light;
 }
@@ -37,9 +37,9 @@
   --border: #27272a;
   --text: #f4f4f5;
   --muted: #a1a1aa;
-  --accent: #818cf8;
-  --accent-fg: #0b0b0d;
-  --accent-soft: #1e1b4b;
+  --accent: #34d399;
+  --accent-fg: #052e1c;
+  --accent-soft: #0b2a20;
   --hot-bg: #3b1508;
   --hot-fg: #fdba8c;
   --warm-bg: #33240a;
@@ -50,9 +50,9 @@
   --danger-fg: #fca5a5;
   --ok-fg: #6ee7b7;
   --orange: #fb923c;
-  --chart-1: #6f67ee;
+  --chart-1: #16a974;
   --chart-2: #d95926;
-  --chart-3: #199e70;
+  --chart-3: #3987e5;
   --grid: #222226;
   color-scheme: dark;
 }

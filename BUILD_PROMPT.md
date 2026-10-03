@@ -177,7 +177,7 @@ An admin-only "Load demo data" button calls `seed_demo(org_id)`.
 Modern B2B SaaS, in the style of Linear, Attio, Vercel and Clay: calm, dense, fast.
 - **Type**: Inter (variable) for UI, tabular numbers for all scores (`font-variant-numeric: tabular-nums`),
   JetBrains Mono only for IDs/API keys. Sizes 12/13/14/16/20/28; body 14.
-- **Colour**: neutral zinc greys, one accent (indigo `#4F46E5` light / `#818CF8` dark). Tier colours:
+- **Colour**: neutral zinc greys, one accent (emerald green `#047857` light / `#34D399` dark). Tier colours:
   Hot = red-orange, Warm = amber, Cold = slate; pills with tinted background + dark text, never
   colour alone (always the word too). Charts use the accent + 2 neutrals; quadrant buckets: Call today
   (accent), Net-new (orange), others (grey), as in the reference.
