@@ -25,6 +25,8 @@ import { BUCKET_LABELS } from "@/lib/types";
 import { Avatar, Button, Card, CompanyLogo, Input, Pill, ScoreBar, TierPill } from "@/components/ui";
 import { ChartCard, StatTile } from "@/components/charts";
 import { AccountDrawer } from "@/components/account/account-drawer";
+import { MarketScanStatus } from "@/components/market-scan-status";
+import type { MarketScanRun } from "@/lib/market-scan";
 import { QuadrantChart } from "./quadrant-chart";
 import { Spotlight } from "./spotlight";
 import { SignalChips } from "./signal-chips";
@@ -43,6 +45,7 @@ interface Props {
   justChanged: JustChanged[];
   owners: { id: string; name: string }[];
   loadError: string | null;
+  marketScans?: MarketScanRun[];
 }
 
 function firstName(ws: Workspace) {
@@ -56,7 +59,7 @@ function greeting() {
   return h < 11 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
 }
 
-export function Dashboard({ workspace, accounts, kpis, justChanged, owners, loadError }: Props) {
+export function Dashboard({ workspace, accounts, kpis, justChanged, owners, loadError, marketScans = [] }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("all");
   const [kpiFilter, setKpiFilter] = useState<KpiFilter>(null);
@@ -291,6 +294,7 @@ export function Dashboard({ workspace, accounts, kpis, justChanged, owners, load
     return (
       <div className="space-y-5">
         {header}
+        <MarketScanStatus runs={marketScans} />
         <Card className="mx-auto max-w-xl px-6 py-12 text-center">
           <span className="mx-auto mb-4 inline-flex size-11 items-center justify-center rounded-xl bg-accent-soft text-accent">
             <Sparkles size={20} />
@@ -316,6 +320,7 @@ export function Dashboard({ workspace, accounts, kpis, justChanged, owners, load
   return (
     <div className="space-y-6">
       {header}
+      <MarketScanStatus runs={marketScans} />
 
       {/* KPI tiles */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">

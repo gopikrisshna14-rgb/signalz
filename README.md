@@ -7,7 +7,7 @@ outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, 
 - `src/`: the Next.js app (stage 1: sign-in, workspaces, Today dashboard, account details, outreach logging).
 - `BUILD_PROMPT.md`: the full spec the app is built from.
 - `supabase/`: the database (tables, row-level security, scoring, dashboard views, demo data, research ingest).
-- `n8n/`: the research workflow (import file, pipeline code, setup guide and the data contract).
+- `n8n/`: the single-URL research workflow (`README.md`) and the bulk market scan contract (`MARKET_SCAN.md`).
 
 ## Deploy on Vercel
 
@@ -38,6 +38,8 @@ Local development: `cp .env.example .env.local`, fill in the two values, `npm in
 - Account panel and `/accounts/[id]`: suppression warnings, why now, buying-window countdown,
   score breakdown, hiring clusters with "Not counted" postings, decision maker, angle picker with
   template-filled opener, copy & open LinkedIn, one-click outreach logging, activity timeline.
+- Bulk market scan ingest: n8n sends classified LinkedIn job postings to `rpc/ingest_market_scan`; they land in the
+  same tables, so Today, accounts, clusters and scores show them. "Latest market scan" on Today, history in Settings.
 - Research page: paste up to 25 LinkedIn URLs, live progress per request, Retry; the app sends each URL
   to n8n with a signed webhook (`/api/research`). Setup: `n8n/README.md`.
 - "Write with AI" on each account: connection note, first message and e-mail from Featherless.ai (`/api/opener`).
@@ -68,6 +70,10 @@ In the Supabase SQL Editor, run the scripts in order, each once (all are safe to
 
 6. `006_research_ingest.sql`: `set_research_status` and `ingest_research` (called by n8n with the
    service key), `mark_research_dispatch` and `retry_research` (called by the app).
+
+7. `007_market_scan_ingest.sql`: `market_scan_runs` and `ingest_market_scan` for the bulk LinkedIn Jobs scan
+   (n8n, service key; never closes postings), and one scoring rule: a single founding / build-from-scratch
+   role also forms a hiring cluster. See `n8n/MARKET_SCAN.md`.
 
 After signing up and creating a workspace in the app:
 `select public.seed_demo('<org id>');` (or the admin's "Load demo data" button).

@@ -1,10 +1,14 @@
 import { requireWorkspace } from "@/lib/workspace";
 import { Card } from "@/components/ui";
 import { AdminActions } from "./admin-actions";
+import { createClient } from "@/lib/supabase/server";
+import { loadMarketScans } from "@/lib/market-scan";
+import { MarketScanHistory } from "@/components/market-scan-status";
 
 export default async function SettingsPage() {
   const ws = await requireWorkspace();
   const isAdmin = ws.role !== "member";
+  const scans = await loadMarketScans(await createClient(), ws.orgId, 10);
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <h1 className="text-[20px] font-semibold tracking-tight">Settings</h1>
@@ -29,6 +33,7 @@ export default async function SettingsPage() {
         </dl>
         {isAdmin && <AdminActions orgId={ws.orgId} />}
       </Card>
+      <MarketScanHistory runs={scans} />
       <Card className="p-5 text-[13px] text-muted">
         ICP &amp; scoring, Team &amp; seats, Integrations (CRM) and the audit log arrive in the next build.
       </Card>
