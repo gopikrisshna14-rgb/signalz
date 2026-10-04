@@ -67,6 +67,7 @@ export interface Store {
   addOutreach(e: OutreachEvent): Promise<void>;
   listOutreach(orgId: string, limit?: number): Promise<OutreachEvent[]>;
   listCompanyOutreach(companyId: string): Promise<OutreachEvent[]>;
+  removeOutreach(e: OutreachEvent): Promise<void>;
 
   getTemplates(orgId: string): Promise<Template[]>;
   putTemplates(orgId: string, t: Template[]): Promise<void>;
@@ -77,6 +78,10 @@ export interface Store {
 
   addAudit(orgId: string, e: AuditEntry): Promise<void>;
   listAudit(orgId: string, limit?: number): Promise<AuditEntry[]>;
+
+  /** Daily KPI snapshots (date → counts) for the 7-day deltas on Today. */
+  getKpiHistory(orgId: string): Promise<Record<string, Record<string, number>>>;
+  putKpiSnapshot(orgId: string, date: string, kpis: Record<string, number>): Promise<void>;
 
   /** Increments a counter that expires after `windowSeconds`; returns the new count. */
   hit(key: string, windowSeconds: number): Promise<number>;
@@ -107,6 +112,7 @@ const k = {
   scan: (id: string) => `scan:${id}`,
   scans: (id: string) => `org:${id}:scans`,
   audit: (id: string) => `org:${id}:audit`,
+  kpis: (id: string) => `org:${id}:kpis`,
 };
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -290,6 +296,14 @@ export class KvStore implements Store {
     return this.kv.lrange<OutreachEvent>(k.companyOutreach(companyId), 0, 199);
   }
 
+  async removeOutreach(e: OutreachEvent) {
+    const [orgList, coList] = await Promise.all([this.kv.lrange<OutreachEvent>(k.outreach(e.orgId), 0, 199), this.kv.lrange<OutreachEvent>(k.companyOutreach(e.companyId), 0, 199)]);
+    const a = orgList.find((x) => x.id === e.id);
+    const b = coList.find((x) => x.id === e.id);
+    if (a) await this.kv.lrem(k.outreach(e.orgId), a);
+    if (b) await this.kv.lrem(k.companyOutreach(e.companyId), b);
+  }
+
   async getTemplates(orgId: string) {
     return (await this.kv.get<Template[]>(k.templates(orgId))) ?? [];
   }
@@ -320,6 +334,13 @@ export class KvStore implements Store {
   }
   async listAudit(orgId: string, limit = 200) {
     return this.kv.lrange<AuditEntry>(k.audit(orgId), 0, limit - 1);
+  }
+
+  async getKpiHistory(orgId: string) {
+    return this.kv.hgetall<Record<string, number>>(k.kpis(orgId));
+  }
+  async putKpiSnapshot(orgId: string, date: string, kpis: Record<string, number>) {
+    await this.kv.hset(k.kpis(orgId), date, kpis);
   }
 
   async hit(key: string, windowSeconds: number) {

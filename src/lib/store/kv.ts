@@ -15,6 +15,8 @@ export interface Kv {
   lpush(key: string, ...values: unknown[]): Promise<void>;
   ltrim(key: string, start: number, stop: number): Promise<void>;
   lrange<T>(key: string, start: number, stop: number): Promise<T[]>;
+  /** Removes all list entries equal to value (compared as JSON). */
+  lrem(key: string, value: unknown): Promise<void>;
   hset(key: string, field: string, value: unknown): Promise<void>;
   hdel(key: string, field: string): Promise<void>;
   hgetall<T>(key: string): Promise<Record<string, T>>;
@@ -75,6 +77,9 @@ export class UpstashKv implements Kv {
   }
   lrange<T>(key: string, start: number, stop: number) {
     return this.r.lrange<T>(key, start, stop);
+  }
+  async lrem(key: string, value: unknown) {
+    await this.r.lrem(key, 0, value);
   }
   async hset(key: string, field: string, value: unknown) {
     await this.r.hset(key, { [field]: value });
@@ -161,6 +166,10 @@ export class MemoryKv implements Kv {
   async lrange<T>(key: string, start: number, stop: number) {
     const l = this.val<unknown[]>(key, []);
     return structuredClone(l.slice(start, stop === -1 ? undefined : stop + 1)) as T[];
+  }
+  async lrem(key: string, value: unknown) {
+    const json = JSON.stringify(value);
+    this.m.set(key, { v: this.val<unknown[]>(key, []).filter((x) => JSON.stringify(x) !== json), exp: null });
   }
   async hset(key: string, field: string, value: unknown) {
     const h = this.val<Record<string, unknown>>(key, {});

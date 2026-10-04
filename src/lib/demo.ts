@@ -682,6 +682,14 @@ export async function seedDemo(store: Store, orgId: string, opts: { withTeam?: b
   // Loading the demo twice refreshes the accounts but does not duplicate the history.
   if (reseed) return companies.length;
   await store.addSignals(orgId, demoSignals(companies, now).reverse());
+  const count = (b: string) => companies.filter((c) => c.score?.bucket === b).length;
+  await store.putKpiSnapshot(orgId, new Date(now.getTime() - 7 * DAY).toISOString().slice(0, 10), {
+    call_today: Math.max(0, count("call_today") - 3),
+    net_new: count("net_new") + 1,
+    changed_24h: 2,
+    new_leader: 3,
+    routed: Math.max(0, count("routed") - 1),
+  });
   for (const e of demoOutreach(orgId, companies, now).reverse()) await store.addOutreach(e);
 
   const laufwerk = companies[0];

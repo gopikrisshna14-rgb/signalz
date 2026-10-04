@@ -158,6 +158,7 @@ export const Settings = z.object({
   savedSearches: z.array(SavedSearch).default([]),
   dataSourceLine: z.boolean().default(false),
   doNotScrape: z.array(z.string()).default([]),
+  icpUpdatedAt: z.string().nullable().default(null),
 });
 export type Settings = z.infer<typeof Settings>;
 

@@ -65,7 +65,7 @@ export function SheetContent({
       <D.Overlay className="animate-fade-in fixed inset-0 z-50 bg-[var(--overlay)]" />
       <D.Content
         className={cn(
-          "fixed top-0 z-50 flex h-full flex-col border-line bg-bg",
+          "fixed top-0 z-50 flex h-full flex-col border-line bg-bg outline-none",
           side === "right" ? "animate-sheet-in right-0 border-l" : "animate-sheet-in-left left-0 border-r",
           side === "right" ? (wide ? "w-full max-w-[880px]" : "w-full max-w-[560px]") : "w-[280px]",
           className,
