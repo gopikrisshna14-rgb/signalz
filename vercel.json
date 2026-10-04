@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "crons": [
+    { "path": "/api/cron/stuck", "schedule": "30 4 * * *" },
+    { "path": "/api/cron/refresh", "schedule": "0 5 * * *" },
+    { "path": "/api/cron/market-scan", "schedule": "0 6 * * 1" },
+    { "path": "/api/cron/retention", "schedule": "0 3 * * 0" }
+  ]
 }

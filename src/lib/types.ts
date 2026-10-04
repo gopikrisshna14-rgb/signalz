@@ -52,7 +52,7 @@ export const OutreachType = z.enum([
 ]);
 export type OutreachType = z.infer<typeof OutreachType>;
 
-export const ResearchStep = z.enum(["queued", "profile", "company", "jobs", "classifying", "scoring", "done", "failed"]);
+export const ResearchStep = z.enum(["queued", "profile", "posts", "company", "employees", "jobs", "stepstone", "classifying", "scoring", "done", "failed"]);
 export type ResearchStep = z.infer<typeof ResearchStep>;
 
 export const SignalType = z.enum(["hiring_cluster", "cluster_grew", "new_sales_leader", "first_sdr", "tier_changed"]);
@@ -470,8 +470,11 @@ export const OUTREACH_LABEL: Record<OutreachType, string> = {
 export const STEP_LABEL: Record<ResearchStep, string> = {
   queued: "Queued",
   profile: "Profile",
+  posts: "Posts",
   company: "Company",
+  employees: "Employees",
   jobs: "Jobs",
+  stepstone: "StepStone",
   classifying: "Classifying",
   scoring: "Scoring",
   done: "Done",
