@@ -42,7 +42,7 @@ export function Avatar({ name, src, size = 28, className }: { name: string; src?
     <span
       aria-hidden
       className={cn("inline-flex shrink-0 items-center justify-center rounded-full font-semibold text-white", className)}
-      style={{ width: size, height: size, fontSize: Math.max(10, size * 0.38), background: `hsl(${hue} 45% 38%)` }}
+      style={{ width: size, height: size, fontSize: Math.max(10, size * 0.38), background: `hsl(${hue} 45% 30%)` }}
     >
       {initials}
     </span>
@@ -59,7 +59,7 @@ export function Logo({ name, src, size = 32 }: { name: string; src?: string | nu
     <span
       aria-hidden
       className="inline-flex shrink-0 items-center justify-center rounded-lg font-semibold text-white"
-      style={{ width: size, height: size, fontSize: size * 0.42, background: `hsl(${hue} 35% 34%)` }}
+      style={{ width: size, height: size, fontSize: size * 0.42, background: `hsl(${hue} 35% 30%)` }}
     >
       {name.replace(/[^A-Za-zÄÖÜäöü]/g, "")[0]?.toUpperCase() ?? "?"}
     </span>

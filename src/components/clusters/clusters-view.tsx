@@ -54,7 +54,7 @@ export function ClustersView(p: Props) {
         </p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
         <ChartCard
           title="Open roles by function × region"
           description="Counted roles in active clusters"

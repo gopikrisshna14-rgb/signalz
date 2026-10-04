@@ -35,7 +35,7 @@ export function OutreachView({ events, templates, sample, timezone }: { events: 
       {events.length === 0 ? (
         <EmptyState icon={<Send size={18} />} title="No outreach logged yet" text="Open an account, copy the opener, send it on LinkedIn and log the step with one click." action={<Link href="/" className="text-[13px] text-accent hover:underline">Go to Today</Link>} />
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
           <ChartCard
             title="Funnel by angle"
             description="Threads that reached each stage (sent → accepted → replied → meeting)"

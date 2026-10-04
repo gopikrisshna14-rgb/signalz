@@ -116,7 +116,7 @@ function BuyerCard() {
             <div className="text-[12px] font-semibold text-accent uppercase">Ready to talk</div>
             <div className="text-[15px] font-semibold">Reach out this week</div>
           </div>
-          <div className="flex items-end gap-1" aria-label="High buying intent">
+          <div className="flex items-end gap-1" role="img" aria-label="High buying intent">
             {[10, 16, 22, 28].map((h) => (
               <span key={h} className="w-2 rounded-full bg-accent" style={{ height: h }} />
             ))}
@@ -204,7 +204,7 @@ export default function LandingPage() {
             </div>
             <div className="mt-10 flex items-center gap-3 text-[14px] text-muted">
               <div className="flex -space-x-2">
-                {["#f7c948", "#0f6b4b", "#e38b2c", "#6b8f71"].map((c, i) => (
+                {["#7a5a00", "#0f6b4b", "#9a4a0c", "#3f5f45"].map((c, i) => (
                   <span key={c} className="inline-flex size-10 items-center justify-center rounded-full text-[10px] font-bold text-white ring-2 ring-bg" style={{ background: c }}>
                     {["SDR", "AE", "VP", "BDR"][i]}
                   </span>
@@ -310,7 +310,7 @@ export default function LandingPage() {
                 <li key={s.n} className="rounded-[28px] bg-white/10 p-8">
                   <div className="font-display text-[44px] leading-none font-semibold text-sun">{s.n}</div>
                   <h3 className="mt-6 text-[22px] font-semibold">{s.title}</h3>
-                  <p className="mt-3 text-[17px] leading-relaxed opacity-85">{s.text}</p>
+                  <p className="mt-3 text-[17px] leading-relaxed opacity-95">{s.text}</p>
                 </li>
               ))}
             </ol>

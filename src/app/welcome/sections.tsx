@@ -59,7 +59,7 @@ export function SneakerExample() {
           <div className="mt-5 rounded-2xl bg-white/10 p-4">
             <div className="flex items-center justify-between">
               <span className="font-semibold">Laufwerk Sneakers</span>
-              <span className="rounded-full bg-white/20 px-2 py-0.5 text-[12px] font-semibold">Hot · Call today</span>
+              <span className="rounded-full bg-black/25 px-2 py-0.5 text-[12px] font-semibold">Hot · Call today</span>
             </div>
             <p className="mt-2 text-[14px] opacity-90">4 open roles in Sales · Wholesale · DACH (3 SDR/AE, 1 leader)</p>
           </div>
@@ -67,7 +67,7 @@ export function SneakerExample() {
             “Hi Jonas, congrats on the new role. With four open roles in your new wholesale team in DACH, the next weeks decide how the team prospects and
             reports. How are you planning to onboard the new reps?”
           </p>
-          <p className="mt-3 text-[13px] opacity-85">You copy it, open LinkedIn, send it yourself, and log it with one click.</p>
+          <p className="mt-3 text-[13px] opacity-95">You copy it, open LinkedIn, send it yourself, and log it with one click.</p>
         </li>
       </ol>
     </section>

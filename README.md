@@ -1,91 +1,109 @@
-# Signalz
+# Signalz (beta)
 
-Dashboard for SDRs that ranks companies building a sales team inside one division ("hiring
-clusters"), shows the decision maker's LinkedIn context, helps write the first message, tracks
-outreach and pushes accounts to a CRM. Stack: Next.js on Vercel, Supabase, n8n, Apify, Featherless.ai (LLM engine).
+Signalz finds companies that are building a sales team **inside one division right now** ("hiring clusters"), ranks them, shows the decision maker's context, helps write a relevant first message, tracks outreach and exports accounts CRM-ready.
 
-- `src/`: the Next.js app (stage 1: sign-in, workspaces, Today dashboard, account details, outreach logging).
-- `BUILD_PROMPT.md`: the full spec the app is built from.
-- `supabase/`: the database (tables, row-level security, scoring, dashboard views, demo data, research ingest).
-- `n8n/`: the single-URL research workflow (`README.md`) and the bulk market scan contract (`MARKET_SCAN.md`).
+Example: a sneaker brand posts 2 SDR roles, 1 AE and a sales team lead for **Sales · Wholesale · DACH**, and a new Head of Sales started 3 weeks ago. That is a hot cluster. The same company posting "Sales Associate, Store Berlin" is shop-floor staff in another division and is not counted.
+
+**Stack:** Next.js 15 (App Router) on Vercel · Upstash Redis (Vercel Storage) · Auth.js v5 · Apify (scraping, chained by webhooks) · Claude API (optional) · Tailwind v4, Radix, TanStack Table, Recharts, cmdk. No separate backend, no workflow tool.
+
+## Run it locally
+
+```bash
+npm install
+npm run dev        # http://localhost:3000 → "Continue with demo account"
+```
+
+With no environment variables at all, the app runs on an in-memory store seeded with demo data (a "Demo data, not saved" banner shows). Research works in **simulation mode** on fixtures.
+
+Checks: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
 
 ## Deploy on Vercel
 
-1. Run the database scripts below in Supabase first.
-2. Import this repository in Vercel. Root Directory: the repo root. Framework: Next.js (set in `vercel.json`).
-3. Settings → Environment Variables (from Supabase → Project Settings → API):
-   - `NEXT_PUBLIC_SUPABASE_URL`: the Project URL.
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: the anon / publishable key.
-   - Optional, for "Write with AI": `FEATHERLESS_API_KEY` (Secret) and `FEATHERLESS_MODEL`
-     (Config, default `Qwen/Qwen2.5-7B-Instruct`).
-   Then redeploy: `NEXT_PUBLIC_` values are baked in at build time.
-4. Supabase → Authentication → URL Configuration: set the Site URL to the Vercel URL and add
-   `https://<your-app>.vercel.app/auth/callback` under Redirect URLs.
-5. Open the app, sign up, create a workspace (tick "Load demo data").
+1. **Import** this repository in Vercel (framework: Next.js, root: repo root).
+2. **Storage:** Vercel → your project → Storage → Create → **Upstash for Redis** (free tier) → connect it to the project. Vercel adds `KV_REST_API_URL` and `KV_REST_API_TOKEN`. (`UPSTASH_REDIS_REST_URL`/`_TOKEN` also work.)
+3. **Environment variables** (Settings → Environment Variables), see `.env.example`:
+   - `AUTH_SECRET` (`openssl rand -base64 32`): required once Redis is connected.
+   - `APP_URL`: your production URL, e.g. `https://signalz.vercel.app`. Previews fall back to the preview URL.
+   - `CRON_SECRET`, `ENCRYPTION_KEY`, `APIFY_WEBHOOK_SECRET`: long random strings.
+   - Optional: `ANTHROPIC_API_KEY`, `APIFY_TOKEN`, OAuth credentials, `BETA_DEMO_LOGIN=true`.
+4. **Redeploy**, sign up, create a workspace, and click "Load demo data" or research a URL.
 
-Local development: `cp .env.example .env.local`, fill in the two values, `npm install`, `npm run dev`.
+### Sign-in providers
 
-## What works now
+Providers whose env vars are missing are hidden on the login page. E-mail + password always works (users are stored in Redis, passwords hashed with bcrypt).
 
-- Public landing page (`/welcome`, shown at `/` to visitors who are not signed in): what the tool is,
-  who it is for, how it works, features, FAQ and sign-up buttons.
+- **Google:** Google Cloud Console → APIs & Services → Credentials → Create OAuth client ID (Web). Authorized redirect URI: `{APP_URL}/api/auth/callback/google`. Set `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`.
+- **Microsoft:** Microsoft Entra admin center → App registrations → New registration. Redirect URI (Web): `{APP_URL}/api/auth/callback/microsoft-entra-id`. Create a client secret. Set `AUTH_MICROSOFT_ENTRA_ID_ID` (Application ID), `AUTH_MICROSOFT_ENTRA_ID_SECRET` and `AUTH_MICROSOFT_ENTRA_ID_ISSUER` (`https://login.microsoftonline.com/<tenant-id>/v2.0`, or `/common/v2.0` for any tenant).
+- **Demo account:** `BETA_DEMO_LOGIN=true` (on by default in development).
 
-- E-mail + password sign-up / sign-in, password reset, Google sign-in (if enabled in Supabase).
-- Onboarding: create a workspace (`create_organization`), optionally load demo data (`seed_demo`).
-- Today dashboard: KPI tiles (click to filter), "Hiring intent vs fit" quadrant chart, "Just changed"
-  feed, bucket tabs with counts, filters, sortable account table (cards on mobile), keyboard `j/k/Enter/c`,
-  live updates through Supabase Realtime.
-- Account panel and `/accounts/[id]`: suppression warnings, why now, buying-window countdown,
-  score breakdown, hiring clusters with "Not counted" postings, decision maker, angle picker with
-  template-filled opener, copy & open LinkedIn, one-click outreach logging, activity timeline.
-- Bulk market scan ingest: n8n sends classified LinkedIn job postings to `rpc/ingest_market_scan`; they land in the
-  same tables, so Today, accounts, clusters and scores show them. "Latest market scan" on Today, history in Settings.
-- Research page: paste up to 25 LinkedIn URLs, live progress per request, Retry; the app sends each URL
-  to n8n with a signed webhook (`/api/research`). Setup: `n8n/README.md`.
-- "Write with AI" on each account: connection note, first message and e-mail from Featherless.ai (`/api/opener`).
-- Outreach page: funnel, reply rate by angle, best time to send, weekly activity, leaderboard, activity
-  feed, templates. Clusters page: function × region heatmap, most-hired roles, new clusters per week,
-  hiring momentum, cluster list. Both show sample data until real rows exist (Sample / Live switch).
-- Claim / release accounts (`claim_account`), admin "Load demo data" and "Re-score all" in Settings.
-- Dark mode (follows the system, toggle in the top bar).
+## Apify setup
 
-Next: daily refresh workflow, team & seats, ICP settings,
-template editor, CRM push, SSO.
+1. Create an Apify account, copy the API token (Settings → API & Integrations) into `APIFY_TOKEN`. Set `APIFY_WEBHOOK_SECRET`.
+2. Pick actors. Every source is swappable through an env var; Settings → Data sources lists the candidates with links. Prefer actors that need **no LinkedIn cookie**.
 
-## Set up the database
+   | Source | Env var | Candidates |
+   |---|---|---|
+   | LinkedIn jobs (required) | `APIFY_JOBS_ACTOR_ID` | `bebity/linkedin-jobs-scraper`, `automation-lab/linkedin-jobs-scraper`, `valig/linkedin-jobs-scraper` |
+   | LinkedIn profile (required) | `APIFY_PROFILE_ACTOR_ID` | `dev_fusion/linkedin-profile-scraper`, `automation-lab/linkedin-profile-scraper`, `usestring/linkedin-profiles` |
+   | LinkedIn company (required) | `APIFY_COMPANY_ACTOR_ID` | `automation-lab/linkedin-company-scraper`, `northbell/linkedin-company-growth-scraper` |
+   | Company employees | `APIFY_EMPLOYEES_ACTOR_ID` | `automation-lab/linkedin-company-employees-scraper` |
+   | LinkedIn posts | `APIFY_POSTS_ACTOR_ID` | `khadinakbar/linkedin-profile-posts-scraper`, `automation-lab/linkedin-post-scraper` |
+   | StepStone (DACH) | `APIFY_STEPSTONE_ACTOR_ID` | `thirdwatch/stepstone-jobs-scraper`, `scrapesage/stepstone-scraper` |
 
-In the Supabase SQL Editor, run the scripts in order, each once (all are safe to re-run):
+3. **Run each actor once in the Apify console** with a real URL and check: the input fields it expects, the output field names (especially **start dates** of roles and **posting dates**) and the price per result. Field-name differences are handled in `src/lib/pipeline/mappers.ts` (`pick(obj, ...paths)`); add a path there if your actor uses a new name. If an actor needs a specific input shape, set `APIFY_<KIND>_INPUT` (see `.env.example`).
 
-1. `001_workspaces.sql`: workspaces, profiles, memberships with roles and a seat limit,
-   invitations, the sign-up trigger (joins by invitation or e-mail domain), `create_organization`,
-   `accept_invitation`.
-2. `002_signals.sql`: ICP and scoring settings, companies, divisions, job postings, people,
-   research requests, hiring clusters, signals, account scores, Realtime publication.
-3. `003_outreach_crm.sql`: message templates, outreach events, tracked links, CRM connections,
-   field mappings, sync log, API keys, audit log, `claim_account`.
-4. `004_scoring_views.sql`: `recompute_company` (clusters, scores, signals), `rescore_org`,
-   and the views the dashboard reads.
-5. `005_demo_seed.sql` (optional): `seed_demo(org_id)` with eight fictional companies, among them
-   a sneaker brand with a Wholesale DACH cluster and a shop-floor role that is correctly not counted.
+### How the pipeline works
 
-6. `006_research_ingest.sql`: `set_research_status` and `ingest_research` (called by n8n with the
-   service key), `mark_research_dispatch` and `retry_research` (called by the app).
+Vercel functions can't wait minutes for a scraper, so each step is a short request and steps are chained by **Apify ad-hoc webhooks**:
 
-7. `007_market_scan_ingest.sql`: `market_scan_runs` and `ingest_market_scan` for the bulk LinkedIn Jobs scan
-   (n8n, service key; never closes postings), and one scoring rule: a single founding / build-from-scratch
-   role also forms a hiring cluster. See `n8n/MARKET_SCAN.md`.
+```
+POST /api/research ─▶ start profile actor (webhook → /api/apify/callback?r=…&step=profile&sig=HMAC)
+callback(profile)  ─▶ map person ─▶ start company actor
+callback(company)  ─▶ map company ─▶ start jobs actor (f_C=<companyId>, last 60 days)
+callback(jobs)     ─▶ classify (rules, then Claude in batches of 20) ─▶ merge under lock ─▶ score ─▶ done
+```
 
-After signing up and creating a workspace in the app:
-`select public.seed_demo('<org id>');` (or the admin's "Load demo data" button).
+Callbacks are verified (HMAC-SHA256, constant time) and idempotent (a callback for a step that isn't current is ignored). Requests unchanged for 20 minutes are failed ("No answer from Apify") and can be retried.
 
-## How a hiring cluster is scored
+### Testing on a preview deployment
 
-Only roles in the same division (function + business unit + region) count together, within
-45 days. Shop-floor and call-center titles are excluded by regex (`icp_settings.excluded_title_patterns`).
-The Hiring Cluster Index adds points for the number of roles, a leader + SDR/AE mix, a sales leader
-in their first 90 days, a CRM named in the job ads, "first SDR / new region" flags, velocity and a
-RevOps hire. Priority = 40 % cluster + 25 % fit + 20 % timing + 15 % reach (weights editable by admins).
-Details and the factor table are in `BUILD_PROMPT.md`, section 3.
+Apify must reach the callback URL, so `localhost` won't work. Either:
 
-Tested on Postgres 16 with Supabase's `auth` schema stubbed: all five scripts run twice
-without errors, RLS hides one workspace's rows from another, and the seat limit and claim rules hold.
+- push a branch and test on its **Vercel preview** (the app uses the preview URL automatically when `APP_URL` is unset; make sure preview deployments have the env vars and are not behind Vercel Authentication, or add a protection-bypass for `/api/apify/callback`), or
+- run locally with a tunnel (`cloudflared tunnel --url http://localhost:3000` or ngrok) and set `APP_URL` to the tunnel URL.
+
+Then paste a LinkedIn URL on `/research` and watch it go Queued → Profile → Company → Jobs → Classifying → Scoring → Done. Without `APIFY_TOKEN`, use **Simulate with demo data**: the same pipeline runs on fixtures from `src/lib/pipeline/fixtures/`.
+
+## Crons (`vercel.json`)
+
+| Path | Schedule | What |
+|---|---|---|
+| `/api/cron/stuck` | daily 04:30 UTC | fail research requests unchanged for 20 min |
+| `/api/cron/refresh` | daily 05:00 UTC | re-run the jobs step for companies enriched > 24 h ago (max 50) |
+| `/api/cron/market-scan` | Mondays 06:00 UTC | run every workspace's saved searches |
+| `/api/cron/retention` | Sundays 03:00 UTC | drop posts and raw job texts older than 180 days |
+
+All cron routes require `Authorization: Bearer $CRON_SECRET` (Vercel sends it when `CRON_SECRET` is set).
+
+**Vercel Hobby only allows daily crons**, so the stuck check runs daily, and the research page also fails stuck requests whenever anyone opens it. On a Pro plan, change the stuck schedule to `*/15 * * * *`.
+
+## Claude
+
+With `ANTHROPIC_API_KEY` set, postings and people are classified with Claude (`ANTHROPIC_MODEL`, default `claude-opus-5-5`) using structured outputs, and "Write with Claude" drafts openers (German for DACH unless the profile is English). Refusals, invalid output and API errors fall back to the rules classifier and the templates. Without a key, the UI says so and uses rules and templates. For supported models, server-side refusal fallbacks (`fallbacks: "default"`) are enabled.
+
+## Data model (Redis)
+
+All access goes through the `Store` interface in `src/lib/store/` (Redis or in-memory), so Postgres can replace it later. Keys are namespaced by workspace: `user:{id}`, `org:{id}`, `org:{id}:members` (hash), `invite:{token}`, `org:{id}:settings`, `company:{id}` (with embedded jobs, people, clusters, score, owner, CRM state), `org:{id}:companies` (sorted by priority), `org:{id}:companyKey:{key}` (dedupe), `org:{id}:signals`, `research:{id}`, `org:{id}:outreach`, `org:{id}:templates`, `org:{id}:scans`, `org:{id}:audit`, `lock:company:{id}`. The beta reads all companies of a workspace into memory for the dashboard (`loadCompanies` in `src/lib/accounts.ts`), fine up to ~2,000 accounts.
+
+## Code map
+
+- `src/lib/scoring.ts`: clusters, Hiring Cluster Index, fit / timing / reach / priority, buckets, reasons, signals (pure, unit-tested)
+- `src/lib/pipeline/`: `rules.ts` (rules classifier), `classify.ts` (Claude), `mappers.ts`, `apify.ts`, `steps.ts`, `merge.ts`, `scan.ts`, `fixtures/`
+- `src/lib/store/`: `Store` interface, Upstash and in-memory backends
+- `src/lib/crm/hubspot.ts`, `src/lib/export.ts`: HubSpot push (with dry run) and CSV/JSON export
+- `src/app/api/`: route handlers (zod-validated, JSON errors `{ error, message }`, session + workspace role checked)
+- `tests/`: Vitest (scoring, rules, mappers, URL normalisation, simulated pipeline, export, seats)
+
+## Data protection (GDPR)
+
+Only business-context data about people is stored (name, title, employer, public profile facts, work posts). Posts and raw job texts are dropped after 180 days. Every profile card shows source and scrape date. Admins can delete a person and add them to a do-not-scrape list. E-mail openers can include a line saying where the data came from (Art. 14; Settings → Data sources). Scraping LinkedIn may conflict with LinkedIn's terms: every source is swappable for licensed data, and the server never uses an SDR's own LinkedIn session. Signalz never sends messages on LinkedIn: the SDR copies the text, sends it and logs the step.

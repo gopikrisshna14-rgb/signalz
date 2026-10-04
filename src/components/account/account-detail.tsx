@@ -641,13 +641,13 @@ export function AccountDetailView({ detail, compact }: { detail: AccountDetail; 
     <div className="space-y-4">
       <Header d={d} onClaim={() => void actions.claim(c.id, c.name)} onRelease={() => void actions.release(c.id, c.name)} onStatus={setStatus} />
       <Suppression d={d} />
-      <div className={cn("grid gap-4", !compact && "lg:grid-cols-2")}>
-        <div className="space-y-4">
+      <div className={cn("grid min-w-0 gap-4", !compact && "lg:grid-cols-2")}>
+        <div className="min-w-0 space-y-4">
           <WhyNow d={d} />
           <People d={d} onChanged={() => void refresh()} />
           <ScoreBreakdown c={c} />
         </div>
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <OutreachPanel d={d} onLog={(t, angle, personId) => void actions.log(c.id, c.name, t, { angle, personId }).then(refresh)} />
           <Clusters d={d} />
           <CrmPreview d={d} />
