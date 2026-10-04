@@ -1,50 +1,77 @@
-import { clsx, type ClassValue } from "clsx";
-import { extendTailwindMerge } from "tailwind-merge";
+const DAY = 86_400_000;
 
-// Teach tailwind-merge the theme's colour tokens so a later "bg-accent-soft" replaces "bg-surface-2".
-const twMerge = extendTailwindMerge({
-  extend: {
-    theme: {
-      color: [
-        "bg", "surface", "surface-2", "line", "fg", "muted", "accent", "accent-fg", "accent-soft",
-        "hot-bg", "hot-fg", "warm-bg", "warm-fg", "cold-bg", "cold-fg", "danger-bg", "danger-fg",
-        "ok", "orange", "chart-1", "chart-2", "chart-3",
-      ],
-    },
-  },
-});
-
-export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
-
-export function relativeTime(iso: string | null | undefined): string {
+export function relativeTime(iso: string | null | undefined, now = Date.now()): string {
   if (!iso) return "—";
-  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} h ago`;
-  if (diff < 86400 * 30) return `${Math.floor(diff / 86400)} d ago`;
-  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  const diff = now - Date.parse(iso);
+  if (Number.isNaN(diff)) return "—";
+  const m = Math.round(diff / 60_000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} h ago`;
+  const d = Math.round(diff / DAY);
+  if (d < 30) return `${d} d ago`;
+  const mo = Math.round(d / 30);
+  if (mo < 12) return `${mo} mo ago`;
+  return `${Math.round(mo / 12)} y ago`;
 }
 
-export function initials(name: string | null | undefined): string {
-  if (!name) return "?";
+export function daysAgo(iso: string | null | undefined, now = Date.now()): number | null {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  return Number.isNaN(t) ? null : Math.max(0, Math.floor((now - t) / DAY));
+}
+
+export function shortDate(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+export function timeOfDay(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+}
+
+export function initials(name: string): string {
   return name
+    .replace(/^Dr\.\s*/, "")
     .split(/\s+/)
-    .filter(Boolean)
     .slice(0, 2)
-    .map((p) => p[0]!.toUpperCase())
+    .map((p) => p[0]?.toUpperCase() ?? "")
     .join("");
 }
 
-export function errorMessage(e: unknown): string {
-  const msg = (e as { message?: string })?.message ?? String(e);
-  const known: Record<string, string> = {
-    claimed_by_other: "Another SDR already owns this account.",
-    not_owner: "Only the owner or an admin can release this account.",
-    seat_limit_reached: "No seat left in this workspace. Ask an admin to add seats.",
-    forbidden: "Only workspace admins can do this.",
-  };
-  for (const [k, v] of Object.entries(known)) if (msg.includes(k)) return v;
-  if (msg.includes("organizations_slug_key")) return "That workspace URL is taken. Try another.";
-  return msg;
+export function usd(n: number): string {
+  return `$${n.toFixed(n < 1 ? 3 : 2)}`;
+}
+
+export function pct(n: number): string {
+  return `${Math.round(n * 100)} %`;
+}
+
+const COUNTRY: Record<string, string> = {
+  DE: "Germany",
+  AT: "Austria",
+  CH: "Switzerland",
+  GB: "United Kingdom",
+  IE: "Ireland",
+  NL: "Netherlands",
+  BE: "Belgium",
+  FR: "France",
+  ES: "Spain",
+  IT: "Italy",
+  SE: "Sweden",
+  DK: "Denmark",
+  NO: "Norway",
+  FI: "Finland",
+  PL: "Poland",
+  CZ: "Czechia",
+  PT: "Portugal",
+  US: "United States",
+  CA: "Canada",
+};
+
+export function countryName(code: string | null | undefined): string {
+  if (!code) return "—";
+  return COUNTRY[code] ?? code;
 }

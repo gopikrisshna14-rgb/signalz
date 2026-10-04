@@ -31,6 +31,10 @@
   --chart-2: #eb6834;
   --chart-3: #2a78d6;
   --grid: #ececef;
+  --hover: #f4f4f5;
+  --overlay: rgba(9, 9, 11, 0.4);
+  --info-bg: #eff6ff;
+  --info-fg: #1d4ed8;
   color-scheme: light;
 }
 
@@ -61,6 +65,10 @@
   --chart-2: #d95926;
   --chart-3: #3987e5;
   --grid: #222226;
+  --hover: #1c1c20;
+  --overlay: rgba(0, 0, 0, 0.6);
+  --info-bg: #172554;
+  --info-fg: #bfdbfe;
   color-scheme: dark;
 }
 
@@ -113,6 +121,9 @@
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
+  --color-hover: var(--hover);
+  --color-info-bg: var(--info-bg);
+  --color-info-fg: var(--info-fg);
   --color-sun: var(--sun);
   --color-sun-soft: var(--sun-soft);
   --color-sun-ink: var(--sun-ink);
@@ -128,6 +139,7 @@ body {
 
 body {
   font-size: 14px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -157,3 +169,36 @@ body {
   border-radius: 8px;
   animation: pulse-soft 1.4s ease-in-out infinite;
 }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 150ms ease-out;
+}
+
+@keyframes sheet-in {
+  from { transform: translateX(100%); }
+  to { transform: none; }
+}
+@keyframes sheet-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+.animate-sheet-in {
+  animation: sheet-in 200ms ease-out;
+}
+.animate-sheet-in-left {
+  animation: sheet-in-left 200ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+/* Recharts: no focus outline box around the whole chart on click */
+.recharts-wrapper:focus, .recharts-surface:focus { outline: none; }

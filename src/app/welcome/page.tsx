@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ProductShot, SneakerExample } from "./sections";
 import { Fraunces } from "next/font/google";
 import {
   ArrowRight,
@@ -21,7 +22,7 @@ import {
 const display = Fraunces({ subsets: ["latin", "latin-ext"], weight: ["500", "600", "700"], variable: "--font-display" });
 
 export const metadata: Metadata = {
-  title: "Signalz · Reach buyers when they're ready to buy",
+  title: { absolute: "Signalz (beta) · Buying signals for SDRs" },
   description:
     "Signalz picks up buying signals from the decision makers you sell to, a new role, a growing team, a new budget, and tells your reps when to reach out and what to say.",
   openGraph: {
@@ -32,7 +33,9 @@ export const metadata: Metadata = {
 };
 
 const NAV = [
+  { href: "#example", label: "Example" },
   { href: "#signals", label: "Buying signals" },
+  { href: "#product", label: "Product" },
   { href: "#how", label: "How it works" },
   { href: "#results", label: "Why it converts" },
   { href: "#faq", label: "FAQ" },
@@ -50,7 +53,7 @@ function Logo() {
   );
 }
 
-function Cta({ children = "Start free", dark = false }: { children?: React.ReactNode; dark?: boolean }) {
+function Cta({ children = "Join the beta", dark = false }: { children?: React.ReactNode; dark?: boolean }) {
   return (
     <Link
       href="/signup"
@@ -87,7 +90,7 @@ function BuyerCard() {
     { icon: <UserRoundCheck size={16} />, text: "Started as Head of Sales", when: "3 weeks ago" },
     { icon: <Users size={16} />, text: "Is building a team of 4 new reps", when: "this month" },
     { icon: <MessageSquareQuote size={16} />, text: "Posted: “Our biggest challenge is onboarding fast”", when: "5 days ago" },
-    { icon: <Repeat size={16} />, text: "Used a tool like yours at his last company", when: "2019–2025" },
+    { icon: <Repeat size={16} />, text: "Used a tool like yours at their last company", when: "2019–2025" },
   ];
   return (
     <div className="relative mx-auto w-full max-w-[470px]">
@@ -159,8 +162,9 @@ export default function LandingPage() {
       {/* Nav */}
       <header className="sticky top-0 z-40 bg-bg/85 backdrop-blur">
         <div className="mx-auto flex h-18 max-w-6xl items-center gap-10 px-5 sm:px-8">
-          <Link href="/welcome" aria-label="Signalz home">
+          <Link href="/welcome" aria-label="Signalz home" className="flex items-center gap-2">
             <Logo />
+            <span className="rounded-full bg-sun-soft px-2 py-0.5 text-[12px] font-semibold text-sun-ink">Beta</span>
           </Link>
           <nav className="hidden items-center gap-7 text-[15px] text-muted lg:flex">
             {NAV.map((n) => (
@@ -174,7 +178,7 @@ export default function LandingPage() {
               Log in
             </Link>
             <Link href="/signup" className="inline-flex h-11 items-center rounded-full bg-accent px-5 text-[15px] font-semibold text-accent-fg hover:opacity-90">
-              Start free
+              Join the beta
             </Link>
           </div>
         </div>
@@ -193,7 +197,7 @@ export default function LandingPage() {
               you exactly when to reach out and what to say. More replies, more meetings, more closed deals.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Cta>Find my ready buyers</Cta>
+              <Cta>Join the beta</Cta>
               <a href="#how" className="inline-flex h-13 items-center gap-2 px-2 text-[16px] font-semibold underline-offset-4 hover:underline">
                 See how it works
               </a>
@@ -211,6 +215,9 @@ export default function LandingPage() {
           </div>
           <BuyerCard />
         </section>
+
+        <SneakerExample />
+        <ProductShot />
 
         {/* The shift */}
         <section className="bg-surface py-28">
@@ -260,7 +267,7 @@ export default function LandingPage() {
                 icon: <Repeat size={24} />,
                 title: "A familiar face",
                 text: "People who used a product like yours before are faster to say yes. We tell you when that’s the case.",
-                example: "“Used your category of tool at her last company.”",
+                example: "“Used your category of tool at their last company.”",
               },
             ].map((s) => (
               <div key={s.title} className="flex flex-col rounded-[28px] bg-surface p-8 ring-1 ring-line">
@@ -468,10 +475,10 @@ export default function LandingPage() {
               Stop chasing. Start converting.
             </h2>
             <p className="relative mx-auto mt-5 max-w-xl text-[19px] text-[#4a3a10]">
-              See which of your buyers are ready to talk today. Free to start, set up in minutes.
+              See which accounts are building a sales team right now. Free during the beta, set up in minutes.
             </p>
             <div className="relative mt-10 flex flex-wrap justify-center gap-4">
-              <Cta dark>Find my ready buyers</Cta>
+              <Cta dark>Join the beta</Cta>
               <Link href="/login" className="inline-flex h-13 items-center rounded-full px-6 text-[16px] font-semibold ring-2 ring-[#1d1a14]/25 hover:bg-white/30">
                 Log in
               </Link>
