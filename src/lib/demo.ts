@@ -472,11 +472,13 @@ const SPECS: CompanySpec[] = [
   },
 ];
 
+const slugOf = (c: CompanySpec) => c.domain.split(".")[0];
+
 function mkJob(spec: JobSpec, company: CompanySpec, settings: Settings, now: Date, i: number): Job {
   const country = countryFromLocation(spec.location ?? company.location);
   const posted = ago(spec.days, now, 8 + (i % 8));
   return {
-    id: newId("job"),
+    id: `job_${slugOf(company)}_${i}`,
     source: "linkedin",
     externalId: `demo-${company.domain}-${i}`,
     title: spec.title,
@@ -495,7 +497,7 @@ function mkJob(spec: JobSpec, company: CompanySpec, settings: Settings, now: Dat
   };
 }
 
-function mkPerson(spec: PersonSpec, company: CompanySpec, now: Date): Person {
+function mkPerson(spec: PersonSpec, company: CompanySpec, now: Date, i: number): Person {
   const [firstName, ...rest] = spec.name.replace(/^Dr\. /, "").split(" ");
   const slug = spec.name.toLowerCase().replace(/^dr\. /, "").replace(/[^a-z]+/g, "-");
   const previousRoles = (spec.previous ?? []).map((p) => {
@@ -503,7 +505,7 @@ function mkPerson(spec: PersonSpec, company: CompanySpec, now: Date): Person {
     return { company: p.company, title: p.title, from: from ? `${from}-01-01` : null, to: to ? `${to}-01-01` : null };
   });
   return {
-    id: newId("per"),
+    id: `per_${slugOf(company)}_${i}`,
     name: spec.name,
     firstName,
     lastName: rest.join(" "),
@@ -535,7 +537,8 @@ export function buildDemoCompanies(orgId: string, settings: Settings, now = new 
     const country = countryFromLocation(spec.location);
     const owner = spec.owner ? DEMO_TEAM.find((m) => m.id === spec.owner) : null;
     const base: Company = {
-      id: newId("co"),
+      // Deterministic ids: the in-memory demo store is rebuilt per server instance, links must still work.
+      id: `co_${orgId.replace(/^o_/, "")}_${slugOf(spec)}`,
       orgId,
       name: spec.name,
       domain: spec.domain,
@@ -553,7 +556,7 @@ export function buildDemoCompanies(orgId: string, settings: Settings, now = new 
       routedTo: null,
       divisions: [],
       jobs: spec.jobs.map((j, i) => mkJob(j, spec, settings, now, idx * 20 + i)),
-      people: spec.people.map((p) => mkPerson(p, spec, now)),
+      people: spec.people.map((p, i) => mkPerson(p, spec, now, i)),
       clusters: [],
       score: null,
       scoreHistory: [],
@@ -669,14 +672,17 @@ export async function seedDemo(store: Store, orgId: string, opts: { withTeam?: b
     }
   }
   const companies = buildDemoCompanies(orgId, settings, now);
+  const reseed = (await store.getCompany(companies[0].id)) !== null;
   for (const c of companies) {
     await store.putCompany(c);
     if (c.linkedinUrl) await store.setCompanyKey(orgId, c.linkedinUrl, c.id);
     if (c.domain) await store.setCompanyKey(orgId, c.domain, c.id);
   }
+  if ((await store.getTemplates(orgId)).length === 0) await store.putTemplates(orgId, defaultTemplates());
+  // Loading the demo twice refreshes the accounts but does not duplicate the history.
+  if (reseed) return companies.length;
   await store.addSignals(orgId, demoSignals(companies, now).reverse());
   for (const e of demoOutreach(orgId, companies, now).reverse()) await store.addOutreach(e);
-  if ((await store.getTemplates(orgId)).length === 0) await store.putTemplates(orgId, defaultTemplates());
 
   const laufwerk = companies[0];
   const research: Research[] = [
