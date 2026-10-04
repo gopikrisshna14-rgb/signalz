@@ -308,7 +308,7 @@ function Clusters({ d }: { d: AccountDetail }) {
 /* People                                                              */
 /* ------------------------------------------------------------------ */
 
-function PersonCard({ p, own, primary }: { p: Person; own: string; primary?: boolean }) {
+function PersonCard({ p, own, primary, onDelete }: { p: Person; own: string; primary?: boolean; onDelete?: (blockScraping: boolean) => void }) {
   const days = daysAgo(p.roleStartedAt);
   return (
     <div className={cn("rounded-[10px] border border-line p-3", primary && "border-accent/50 bg-accent-soft/40")}>
@@ -401,24 +401,46 @@ function PersonCard({ p, own, primary }: { p: Person; own: string; primary?: boo
           ))}
         </div>
       ) : null}
-      <div className="mt-3 text-[11px] text-muted">
-        Source: {p.source === "demo" ? "demo data" : p.source} · scraped {shortDate(p.scrapedAt)}
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-muted">
+        <span>
+          Source: {p.source === "demo" ? "demo data" : p.source} · scraped {shortDate(p.scrapedAt)}
+        </span>
+        {onDelete ? (
+          <span className="ml-auto flex gap-1">
+            <button className="rounded px-1.5 py-0.5 hover:bg-hover hover:text-fg" onClick={() => onDelete(false)}>
+              Delete person
+            </button>
+            <button className="rounded px-1.5 py-0.5 text-danger-fg hover:bg-danger-bg" onClick={() => onDelete(true)}>
+              Delete &amp; don’t scrape again
+            </button>
+          </span>
+        ) : null}
       </div>
     </div>
   );
 }
 
-function People({ d }: { d: AccountDetail }) {
+function People({ d, onChanged }: { d: AccountDetail; onChanged: () => void }) {
   const c = d.company;
+  const del = (p: Person) =>
+    d.viewer.isAdmin
+      ? async (block: boolean) => {
+          if (!confirm(`Delete ${p.name} from ${c.name}${block ? " and never scrape them again" : ""}?`)) return;
+          const r = await fetch(`/api/accounts/${c.id}/people`, { method: "DELETE", headers: { "content-type": "application/json" }, body: JSON.stringify({ personId: p.id, doNotScrape: block }) });
+          if (r.ok) toast.success(`${p.name} deleted`);
+          else toast.error("Could not delete");
+          onChanged();
+        }
+      : undefined;
   const dm = c.people.find((p) => p.id === c.score?.decisionMakerId) ?? null;
   const rest = c.people.filter((p) => p !== dm);
   return (
     <Section title="Who to contact">
       {!dm ? <p className="text-[13px] text-muted">No contact found yet. Research the decision maker’s LinkedIn profile to add them.</p> : null}
       <div className="space-y-3">
-        {dm ? <PersonCard p={dm} own={d.settings.ownProduct} primary /> : null}
+        {dm ? <PersonCard p={dm} own={d.settings.ownProduct} primary onDelete={del(dm)} /> : null}
         {rest.map((p) => (
-          <PersonCard key={p.id} p={p} own={d.settings.ownProduct} />
+          <PersonCard key={p.id} p={p} own={d.settings.ownProduct} onDelete={del(p)} />
         ))}
       </div>
       <div className="mt-3 text-[12px] text-muted">
@@ -622,7 +644,7 @@ export function AccountDetailView({ detail, compact }: { detail: AccountDetail; 
       <div className={cn("grid gap-4", !compact && "lg:grid-cols-2")}>
         <div className="space-y-4">
           <WhyNow d={d} />
-          <People d={d} />
+          <People d={d} onChanged={() => void refresh()} />
           <ScoreBreakdown c={c} />
         </div>
         <div className="space-y-4">
