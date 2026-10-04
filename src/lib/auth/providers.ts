@@ -1,3 +1,11 @@
+/**
+ * Open access (beta testing): no sign-in at all, every visitor uses the demo account and workspace.
+ * On by default; set BETA_REQUIRE_LOGIN=true to require sign-in again.
+ */
+export function openAccess(): boolean {
+  return process.env.BETA_REQUIRE_LOGIN !== "true";
+}
+
 /** Which sign-in options are configured. Providers whose env vars are missing are hidden. */
 export function enabledProviders() {
   return {

@@ -66,6 +66,7 @@ export const PATCH = route(async (req: Request) => {
 /** Delete the current workspace and all its data (owner). */
 export const DELETE = route(async (req: Request) => {
   const ctx = await requireOwner();
+  if (ctx.org.isDemo) throw new ApiError(400, "demo_workspace", "The shared demo workspace can’t be deleted");
   const { confirm } = await body(req, z.object({ confirm: z.string() }));
   if (confirm !== ctx.org.name) throw new ApiError(400, "confirm_mismatch", "Type the workspace name to confirm");
   const store = await getStore();

@@ -6,6 +6,10 @@ Example: a sneaker brand posts 2 SDR roles, 1 AE and a sales team lead for **Sal
 
 **Stack:** Next.js 15 (App Router) on Vercel · Upstash Redis (Vercel Storage) · Auth.js v5 · Apify (scraping, chained by webhooks) · Claude API (optional) · Tailwind v4, Radix, TanStack Table, Recharts, cmdk. No separate backend, no workflow tool.
 
+## Open test mode (current default)
+
+For now the app runs **without sign-in**: every visitor lands on Today and uses the demo account in the shared demo workspace (a banner says so). Set `BETA_REQUIRE_LOGIN=true` in Vercel to turn sign-in, sign-up, workspaces and invites back on. Without Redis, data lives in each server instance's memory, so changes may not persist between requests on Vercel; add Upstash Redis to keep them.
+
 ## Run it locally
 
 ```bash

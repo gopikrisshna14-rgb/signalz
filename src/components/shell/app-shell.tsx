@@ -22,6 +22,7 @@ export interface ShellProps {
   orgs: { id: string; name: string; role: string }[];
   role: string;
   demoMode: boolean;
+  openAccess: boolean;
   children: React.ReactNode;
 }
 
@@ -88,7 +89,7 @@ function OrgSwitcher({ org, orgs, collapsed }: { org: ShellProps["org"]; orgs: S
   );
 }
 
-export function AppShell({ user, org, orgs, demoMode, children }: ShellProps) {
+export function AppShell({ user, org, orgs, demoMode, openAccess, children }: ShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -150,9 +151,12 @@ export function AppShell({ user, org, orgs, demoMode, children }: ShellProps) {
       </Dialog>
 
       <div className={cn("transition-[padding] duration-150", collapsed ? "md:pl-14" : "md:pl-56")}>
-        {demoMode ? (
+        {demoMode || openAccess ? (
           <div role="status" className="flex items-center justify-center gap-2 bg-warm-bg px-4 py-1.5 text-center text-[12px] font-medium text-warm-fg">
-            <TriangleAlert size={14} aria-hidden /> Demo data, not saved. Add Upstash Redis in Vercel → Storage to keep your data.
+            <TriangleAlert size={14} aria-hidden />
+            {[openAccess ? "Open test mode: no sign-in, everyone uses the demo workspace." : null, demoMode ? "Demo data, not saved (add Upstash Redis in Vercel → Storage to keep it)." : null]
+              .filter(Boolean)
+              .join(" ")}
           </div>
         ) : null}
         <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
@@ -198,9 +202,11 @@ export function AppShell({ user, org, orgs, demoMode, children }: ShellProps) {
                       <Settings size={14} /> Settings
                     </Link>
                   </MenuItem>
-                  <MenuItem onSelect={() => void logout()}>
-                    <LogOut size={14} /> Sign out
-                  </MenuItem>
+                  {openAccess ? null : (
+                    <MenuItem onSelect={() => void logout()}>
+                      <LogOut size={14} /> Sign out
+                    </MenuItem>
+                  )}
                 </MenuContent>
               </Menu>
             </div>

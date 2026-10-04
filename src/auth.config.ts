@@ -15,6 +15,7 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request }) {
       const { pathname } = request.nextUrl;
+      if (process.env.BETA_REQUIRE_LOGIN !== "true") return true; // open access: no sign-in
       if (PUBLIC.some((re) => re.test(pathname))) return true;
       if (auth?.user) return true;
       if (pathname === "/") return Response.redirect(new URL("/welcome", request.nextUrl));

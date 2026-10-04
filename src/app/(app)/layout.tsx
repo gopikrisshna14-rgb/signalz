@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/shell/app-shell";
 import { activeOrgs, pageCtx } from "@/lib/auth/context";
+import { openAccess } from "@/lib/auth/providers";
 import { storeMode } from "@/lib/store";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       orgs={orgs.map((o) => ({ id: o.org.id, name: o.org.name, role: o.membership.role }))}
       role={ctx.role}
       demoMode={storeMode() === "memory"}
+      openAccess={openAccess()}
     >
       {children}
     </AppShell>

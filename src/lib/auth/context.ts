@@ -3,12 +3,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { ApiError, forbidden, notFound } from "@/lib/api";
-import { getStore } from "@/lib/store";
+import { openAccess } from "@/lib/auth/providers";
+import { ensureDemoWorkspace, getStore } from "@/lib/store";
 import type { Membership, Org, Role, User } from "@/lib/types";
 
 export const ORG_COOKIE = "signalz_org";
 
 export async function getSessionUser(): Promise<User | null> {
+  if (openAccess()) return ensureDemoWorkspace(await getStore());
   const session = await auth();
   const id = session?.user?.id;
   if (!id) return null;
