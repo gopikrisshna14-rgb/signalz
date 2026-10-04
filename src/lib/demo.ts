@@ -585,7 +585,7 @@ function demoSignals(companies: Company[], now: Date): Signal[] {
   const out: Signal[] = [];
   companies.forEach((c, i) => {
     const dm = c.people.find((p) => p.id === c.score?.decisionMakerId);
-    c.clusters.forEach((cl, j) => {
+    c.clusters.forEach((cl) => {
       out.push({
         id: newId("sig"),
         companyId: c.id,
@@ -593,7 +593,7 @@ function demoSignals(companies: Company[], now: Date): Signal[] {
         type: "hiring_cluster",
         title: `New hiring cluster: ${cl.openRoles} open roles in ${cl.label}`,
         strength: cl.index,
-        at: ago(2 + ((i + j) % 6), now, 7 + (i % 9)),
+        at: cl.firstSeenAt,
         payload: { clusterKey: cl.key },
       });
     });
